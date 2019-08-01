@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprint", "Blueprint\Blueprint.csproj", "{6846A312-E809-404B-A354-ED9A05477784}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprint.Logic", "Blueprint.Logic\Blueprint.Logic.csproj", "{A67C2893-449C-4C76-ADFD-D532C3CD0361}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6846A312-E809-404B-A354-ED9A05477784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6846A312-E809-404B-A354-ED9A05477784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6846A312-E809-404B-A354-ED9A05477784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6846A312-E809-404B-A354-ED9A05477784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A67C2893-449C-4C76-ADFD-D532C3CD0361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A67C2893-449C-4C76-ADFD-D532C3CD0361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A67C2893-449C-4C76-ADFD-D532C3CD0361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A67C2893-449C-4C76-ADFD-D532C3CD0361}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6A2BAAB-F9AE-436C-9A44-194F47A4ACD2}
+	EndGlobalSection
+EndGlobal
