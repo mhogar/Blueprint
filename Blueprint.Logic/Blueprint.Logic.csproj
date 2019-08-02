@@ -41,10 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CppWriter.cs" />
-    <Compile Include="ILangClassWriter.cs" />
+    <Compile Include="Cpp\CppWriter.cs" />
+    <Compile Include="Cpp\CppWriterFactory.cs" />
+    <Compile Include="ILangClassBuilder.cs" />
     <Compile Include="ILangCoreWriter.cs" />
-    <Compile Include="LangWriterBase.cs" />
+    <Compile Include="Cpp\CppClassBuilder.cs" />
+    <Compile Include="ILangWriter.cs" />
+    <Compile Include="LangWriterFactoryBase.cs" />
     <Compile Include="ObjDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

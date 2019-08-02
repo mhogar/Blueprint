@@ -39,32 +39,6 @@ namespace Blueprint.Logic
         }
     }
 
-    public class MemberObj
-    {
-        public AccessModifier Access
-        {
-            get;
-            set;
-        }
-
-        public VariableObj Variable
-        {
-            get;
-            set;
-        }
-
-        public MemberObj(AccessModifier access, VariableObj variable)
-        {
-            Access = access;
-            Variable = variable;
-        }
-
-        public MemberObj(AccessModifier access = AccessModifier.PUBLIC, string type = "", string name = "")
-            : this(access, new VariableObj(type, name))
-        {
-        }
-    }
-
     public class FunctionObj
     {
         public AccessModifier Access
@@ -73,7 +47,13 @@ namespace Blueprint.Logic
             set;
         }
 
-        public VariableObj TypeAndName
+        public string Type
+        {
+            get;
+            set;
+        }
+
+        public string Name
         {
             get;
             set;
@@ -82,17 +62,18 @@ namespace Blueprint.Logic
         public List<VariableObj> FuncParams
         {
             get;
+            set;
         }
 
-        public FunctionObj(AccessModifier access, VariableObj typeAndName)
+        public FunctionObj(VariableObj typeAndName)
         {
-            Access = access;
-            TypeAndName = typeAndName;
+            Type = typeAndName.Type;
+            Name = typeAndName.Name;
             FuncParams = new List<VariableObj>();
         }
 
-        public FunctionObj(AccessModifier access = AccessModifier.PUBLIC, string type = "", string name = "")
-            : this(access, new VariableObj(type, name))
+        public FunctionObj(string type = "", string name = "")
+            : this(new VariableObj(type, name))
         {
         }
     }

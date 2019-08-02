@@ -11,14 +11,18 @@ namespace Blueprint
     {
         static void Main(string[] args)
         {
-            var writer = new CppWriter("Foo");
-
-            //add members, properties, and functions
-            writer.AddMember(new MemberObj(AccessModifier.PROTECTED, "int", "foo1"));
-            writer.AddProperty(new MemberObj(AccessModifier.PUBLIC, "bool", "foo2"));
-
             const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
-            writer.Write(OUT_DIR);
+            LangWriterFactoryBase langWriterFactory = new CppWriterFactory(OUT_DIR + "foo");
+
+            var writer = langWriterFactory.CreateLangWriter();
+            writer.BeginWriter();
+            {
+                var classBuilder = langWriterFactory.CreateClassBuilder();
+                classBuilder.CreateClass("Foo", AccessModifier.PUBLIC);
+                classBuilder.CreateClassProperty(new VariableObj("int", "foo1"), AccessModifier.PROTECTED);
+                classBuilder.WriteClass(writer);
+            }
+            writer.EndWriter();
 
             Console.ReadLine();
         }
