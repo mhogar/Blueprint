@@ -49,11 +49,29 @@ namespace Blueprint.Logic
 
         public string Type
         {
-            get;
-            set;
+            get
+            {
+                return TypeAndName.Type;
+            }
+            set
+            {
+                TypeAndName.Type = value;
+            }
         }
 
         public string Name
+        {
+            get
+            {
+                return TypeAndName.Name;
+            }
+            set
+            {
+                TypeAndName.Name = value;
+            }
+        }
+
+        public VariableObj TypeAndName
         {
             get;
             set;
@@ -67,8 +85,7 @@ namespace Blueprint.Logic
 
         public FunctionObj(VariableObj typeAndName)
         {
-            Type = typeAndName.Type;
-            Name = typeAndName.Name;
+            TypeAndName = typeAndName;
             FuncParams = new List<VariableObj>();
         }
 

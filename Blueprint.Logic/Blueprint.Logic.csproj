@@ -43,10 +43,12 @@
   <ItemGroup>
     <Compile Include="Cpp\CppWriter.cs" />
     <Compile Include="Cpp\CppWriterFactory.cs" />
+    <Compile Include="FilenameInfo.cs" />
     <Compile Include="ILangClassBuilder.cs" />
     <Compile Include="ILangCoreWriter.cs" />
     <Compile Include="Cpp\CppClassBuilder.cs" />
     <Compile Include="ILangWriter.cs" />
+    <Compile Include="LangStreamWrapper.cs" />
     <Compile Include="LangWriterFactoryBase.cs" />
     <Compile Include="ObjDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
