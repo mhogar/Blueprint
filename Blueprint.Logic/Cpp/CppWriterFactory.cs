@@ -12,10 +12,10 @@ namespace Blueprint.Logic
         {
         }
 
-        public override byte GetSupportedWriters()
+        public override byte GetSupportedBuilders()
         {
             byte flags = 0;
-            flags &= CLASS_WRITER;
+            flags &= CLASS_BUILDER;
 
             return flags;
         }

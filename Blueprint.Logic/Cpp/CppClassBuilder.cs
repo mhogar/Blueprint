@@ -8,30 +8,60 @@ namespace Blueprint.Logic
 {
     public class CppClassBuilder : ILangClassBuilder
     {
-        private Tuple<string, AccessModifier> _classObj;
-        private List<Tuple<VariableObj, AccessModifier>> _members;
-        private List<Tuple<FunctionObj, AccessModifier, bool>> _functions;
-        private List<Tuple<CppClassBuilder, AccessModifier>> _subClasses;
+        private struct ClassObj
+        {
+            public string className;
+            public AccessModifier accessModifier;
+        }
+
+        private struct ClassMemeber
+        {
+            public VariableObj variableObj;
+            public AccessModifier accessModifier;
+        }
+
+        private struct ClassFunction
+        {
+            public FunctionObj functionObj;
+            public AccessModifier accessModifier;
+            public bool isOverridable;
+        }
+
+        private ClassObj _classObj;
+        private List<ClassMemeber> _members;
+        private List<ClassFunction> _functions;
+        private List<CppClassBuilder> _subClasses;
 
         public CppClassBuilder()
         {
-            _members = new List<Tuple<VariableObj, AccessModifier>>();
-            _functions = new List<Tuple<FunctionObj, AccessModifier, bool>>();
+            _members = new List<ClassMemeber>();
+            _functions = new List<ClassFunction>();
+            _subClasses = new List<CppClassBuilder>();
         }
 
-        public void CreateClass(string name, AccessModifier accessModifier)
+        public void CreateClass(string className, AccessModifier accessModifier)
         {
-            _classObj = new Tuple<string, AccessModifier>(name, accessModifier);
+            _classObj.className = className;
+            _classObj.accessModifier = accessModifier;
         }
 
         public void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, bool isOverridable)
         {
-            _functions.Add(new Tuple<FunctionObj, AccessModifier, bool>(functionObj, accessModifier, isOverridable));
+            ClassFunction classFunction;
+            classFunction.functionObj = functionObj;
+            classFunction.accessModifier = accessModifier;
+            classFunction.isOverridable = isOverridable;
+
+            _functions.Add(classFunction);
         }
 
         public void CreateClassMemeber(VariableObj variableObj, AccessModifier accessModifier)
         {
-            _members.Add(new Tuple<VariableObj, AccessModifier>(variableObj, accessModifier));
+            ClassMemeber classMemeber;
+            classMemeber.variableObj = variableObj;
+            classMemeber.accessModifier = accessModifier;
+
+            _members.Add(classMemeber);
         }
 
         public void CreateClassProperty(VariableObj variableObj, AccessModifier accessModifier)
@@ -53,11 +83,11 @@ namespace Blueprint.Logic
 
         public void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
         {
-            var constructor = new FunctionObj("", _classObj.Item1);
+            var constructor = new FunctionObj("", _classObj.className);
             constructor.FuncParams = constructorParams;
             CreateClassFunction(constructor, accessModifier, false);
 
-            var deconstructor = new FunctionObj("", "~" + _classObj.Item2);
+            var deconstructor = new FunctionObj("", "~" + _classObj.className);
             CreateClassFunction(deconstructor, accessModifier, true);
         }
 
@@ -69,7 +99,7 @@ namespace Blueprint.Logic
                 throw new InvalidCastException("ILangClassBuilder was not a CppClassBuilder.");
             }
 
-            _subClasses.Add(new Tuple<CppClassBuilder, AccessModifier>(cppClassBuilder, accessModifier));
+            _subClasses.Add(cppClassBuilder);
         }
 
         public void WriteClass(ILangWriter langWriter)
@@ -78,6 +108,77 @@ namespace Blueprint.Logic
             if (cppWriter == null)
             {
                 throw new InvalidCastException("ILangWriter was not a CppWriter.");
+            }
+
+            var publicMembers = new List<string>();
+            var protectedMembers = new List<string>();
+            var privateMembers = new List<string>();
+
+            //init member string
+            {
+                foreach (ClassFunction classFunc in _functions)
+                {
+                    string funcStr = CppWriter.CreateFunctionString(classFunc.functionObj);
+                    switch (classFunc.accessModifier)
+                    {
+                        case AccessModifier.PRIVATE:
+                            privateMembers.Add(funcStr);
+                            break;
+                        case AccessModifier.PROTECTED:
+                            protectedMembers.Add(funcStr);
+                            break;
+                        default: //ACCESS_PUBLIC
+                            publicMembers.Add(funcStr);
+                            break;
+                    }
+                }
+
+                foreach (ClassMemeber classMemeber in _members)
+                {
+                    string memberStr = CppWriter.CreateVariableString(classMemeber.variableObj);
+                    switch (classMemeber.accessModifier)
+                    {
+                        case AccessModifier.PRIVATE:
+                            privateMembers.Add(memberStr);
+                            break;
+                        case AccessModifier.PROTECTED:
+                            protectedMembers.Add(memberStr);
+                            break;
+                        default: //ACCESS_PUBLIC
+                            publicMembers.Add(memberStr);
+                            break;
+                    }
+                }
+            }
+
+            //write the header file
+            {
+                LangStreamWrapper stream = cppWriter.HeaderStream;
+                stream.WriteLine("class " + _classObj.className);
+                stream.WriteLine("{");
+                {
+                    var memberStringTuples = new List<Tuple<string, List<string>>>();
+                    memberStringTuples.Add(new Tuple<string, List<string>>("public", publicMembers));
+                    memberStringTuples.Add(new Tuple<string, List<string>>("protected", protectedMembers));
+                    memberStringTuples.Add(new Tuple<string, List<string>>("private", privateMembers));
+
+                    foreach (Tuple<string, List<string>> memberStringTuple in memberStringTuples)
+                    {
+                        List<string> memberStrings = memberStringTuple.Item2;
+                        if (memberStrings.Count > 0)
+                        {
+                            stream.WriteLine(memberStringTuple.Item1 + ":");
+
+                            stream.IncreaseTab();
+                            foreach (string memberStr in memberStrings)
+                            {
+                                stream.WriteLine(memberStr + ";");
+                            }
+                            stream.DecreaseTab();
+                        }
+                    }
+                }
+                stream.WriteLine("};");
             }
         }
     }

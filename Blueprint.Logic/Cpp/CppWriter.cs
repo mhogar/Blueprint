@@ -57,15 +57,15 @@ namespace Blueprint.Logic
         {
             HeaderStream = new LangStreamWrapper(
                 new StreamWriter(
-                    new FileStream(_headerFilenameInfo.FullFilename, FileMode.OpenOrCreate, FileAccess.Write)
+                    new FileStream(_headerFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                 )
             );
-            HeaderStream.WriteLine("#pargma once");
+            HeaderStream.WriteLine("#pragma once");
             HeaderStream.NewLine();
 
             SourceStream = new LangStreamWrapper(
                new StreamWriter(
-                   new FileStream(_sourceFilenameInfo.FullFilename, FileMode.OpenOrCreate, FileAccess.Write)
+                   new FileStream(_sourceFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                )
            );
             SourceStream.WriteLine($"#include \"{_headerFilenameInfo.BaseAndExtname}\"");
@@ -78,7 +78,7 @@ namespace Blueprint.Logic
             SourceStream.Close();
         }
 
-        public string CreateVariableString(VariableObj variableObj, string namespaceName="")
+        public static string CreateVariableString(VariableObj variableObj, string namespaceName="")
         {
             string namespaceStr = "";
             if (namespaceName != "")
@@ -89,7 +89,7 @@ namespace Blueprint.Logic
             return variableObj.Type + " " + namespaceStr + variableObj.Name;
         }
 
-        public string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")
+        public static string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")
         {
             string funcStr = CreateVariableString(functionObj.TypeAndName, namespaceName) + "(";
             foreach (VariableObj funcParam in functionObj.FuncParams)

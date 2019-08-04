@@ -53,7 +53,7 @@ namespace Blueprint.Logic
         public void WriteLine(string text)
         {
             Write(text);
-            _stream.WriteLine();
+            NewLine();
         }
 
         public void NewLine()

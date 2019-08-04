@@ -8,7 +8,7 @@ namespace Blueprint.Logic
 {
     public abstract class LangWriterFactoryBase
     {
-        public const byte CLASS_WRITER = 1;
+        public const byte CLASS_BUILDER = 1;
 
         protected string _outFile;
 
@@ -17,7 +17,7 @@ namespace Blueprint.Logic
             _outFile = outFile;
         }
 
-        public abstract byte GetSupportedWriters();
+        public abstract byte GetSupportedBuilders();
         public abstract ILangWriter CreateLangWriter();
         public abstract ILangClassBuilder CreateClassBuilder();
     }

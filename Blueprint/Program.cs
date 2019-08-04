@@ -12,7 +12,7 @@ namespace Blueprint
         static void Main(string[] args)
         {
             const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
-            LangWriterFactoryBase langWriterFactory = new CppWriterFactory(OUT_DIR + "foo");
+            LangWriterFactoryBase langWriterFactory = new CppWriterFactory(OUT_DIR + "Foo");
 
             var writer = langWriterFactory.CreateLangWriter();
             writer.BeginWriter();
@@ -24,6 +24,7 @@ namespace Blueprint
             }
             writer.EndWriter();
 
+            Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
         }
     }
