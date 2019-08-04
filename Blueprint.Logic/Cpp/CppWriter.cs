@@ -69,7 +69,6 @@ namespace Blueprint.Logic
                )
            );
             SourceStream.WriteLine($"#include \"{_headerFilenameInfo.BaseAndExtname}\"");
-            SourceStream.NewLine();
         }
 
         public void EndWriter()
@@ -96,7 +95,7 @@ namespace Blueprint.Logic
             {
                 funcStr += CreateVariableString(funcParam, "") + ", ";
             }
-            funcStr.TrimEnd(", ".ToCharArray());
+            funcStr = funcStr.TrimEnd(", ".ToCharArray());
             funcStr += ")";
 
             return funcStr;

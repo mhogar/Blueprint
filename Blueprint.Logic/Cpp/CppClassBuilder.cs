@@ -45,7 +45,8 @@ namespace Blueprint.Logic
             _classObj.accessModifier = accessModifier;
         }
 
-        public void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, bool isOverridable)
+        public void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
+            bool isOverridable=false)
         {
             ClassFunction classFunction;
             classFunction.functionObj = functionObj;
@@ -73,10 +74,16 @@ namespace Blueprint.Logic
 
             CreateClassMemeber(variableObj, accessModifier);
 
-            var getFunc = new FunctionObj(variableObj.Type, "get_" + variableObj.Name);
+            var getFunc = new FunctionObj(variableObj.Type, "get_" + variableObj.Name, (stream) =>
+            {
+                stream.WriteLine("return this->" + variableObj.Name);
+            });
             CreateClassFunction(getFunc, AccessModifier.PUBLIC, false);
 
-            var setFunc = new FunctionObj("void", "set_" + variableObj.Name);
+            var setFunc = new FunctionObj("void", "set_" + variableObj.Name, (stream) =>
+            {
+                stream.WriteLine("this->" + variableObj.Name + " = " + variableObj.Name + ";");
+            });
             setFunc.FuncParams.Add(new VariableObj(variableObj.Type, variableObj.Name));
             CreateClassFunction(setFunc, AccessModifier.PUBLIC, false);
         }
@@ -85,7 +92,7 @@ namespace Blueprint.Logic
         {
             var constructor = new FunctionObj("", _classObj.className);
             constructor.FuncParams = constructorParams;
-            CreateClassFunction(constructor, accessModifier, false);
+            CreateClassFunction(constructor, accessModifier);
 
             var deconstructor = new FunctionObj("", "~" + _classObj.className);
             CreateClassFunction(deconstructor, accessModifier, true);
@@ -110,6 +117,12 @@ namespace Blueprint.Logic
                 throw new InvalidCastException("ILangWriter was not a CppWriter.");
             }
 
+            WriterHeaderFile(cppWriter.HeaderStream);
+            WriteSourceFile(cppWriter.SourceStream);
+        }
+
+        private void WriterHeaderFile(LangStreamWrapper stream)
+        {
             var publicMembers = new List<string>();
             var protectedMembers = new List<string>();
             var privateMembers = new List<string>();
@@ -153,7 +166,6 @@ namespace Blueprint.Logic
 
             //write the header file
             {
-                LangStreamWrapper stream = cppWriter.HeaderStream;
                 stream.WriteLine("class " + _classObj.className);
                 stream.WriteLine("{");
                 {
@@ -175,10 +187,28 @@ namespace Blueprint.Logic
                                 stream.WriteLine(memberStr + ";");
                             }
                             stream.DecreaseTab();
+
+                            stream.NewLine();
                         }
                     }
                 }
                 stream.WriteLine("};");
+            }
+        }
+
+        private void WriteSourceFile(LangStreamWrapper stream)
+        {
+            foreach (ClassFunction classFunc in _functions)
+            {
+                stream.NewLine();
+                stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _classObj.className));
+                stream.WriteLine("{");
+
+                stream.IncreaseTab();
+                classFunc.functionObj.ContentDelegate?.Invoke(stream);
+                stream.DecreaseTab();
+
+                stream.WriteLine("}");
             }
         }
     }

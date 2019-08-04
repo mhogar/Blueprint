@@ -83,14 +83,21 @@ namespace Blueprint.Logic
             set;
         }
 
-        public FunctionObj(VariableObj typeAndName)
+        public Action<LangStreamWrapper> ContentDelegate
+        {
+            get;
+            set;
+        }
+
+        public FunctionObj(VariableObj typeAndName, Action<LangStreamWrapper> contentDelegate = null)
         {
             TypeAndName = typeAndName;
             FuncParams = new List<VariableObj>();
+            ContentDelegate = contentDelegate;
         }
 
-        public FunctionObj(string type = "", string name = "")
-            : this(new VariableObj(type, name))
+        public FunctionObj(string type = "", string name = "", Action<LangStreamWrapper> contentDelegate = null)
+            : this(new VariableObj(type, name), contentDelegate)
         {
         }
     }
