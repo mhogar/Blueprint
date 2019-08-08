@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public abstract class LangWriterFactoryBase
+    public abstract class LangWriterFactoryBase : ISupportedFlags
     {
-        public const byte CLASS_BUILDER = 1;
+        public static readonly UInt32 CLASS_BUILDER = 0x1;
 
-        protected string _outFile;
-
-        public LangWriterFactoryBase(string outFile)
+        public LangWriterFactoryBase()
         {
-            _outFile = outFile;
         }
 
-        public abstract byte GetSupportedBuilders();
-        public abstract ILangWriter CreateLangWriter();
-        public abstract ILangClassBuilder CreateClassBuilder();
+        public abstract ILangWriter CreateLangWriter(string outDir);
+        public abstract LangClassBuilderBase CreateClassBuilder();
+        public abstract UInt32 GetSupportedFlags();
     }
 }

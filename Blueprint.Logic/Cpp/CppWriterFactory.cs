@@ -8,24 +8,24 @@ namespace Blueprint.Logic
 {
     public class CppWriterFactory : LangWriterFactoryBase
     {
-        public CppWriterFactory(string outDir) : base(outDir)
+        public CppWriterFactory()
         {
         }
 
-        public override byte GetSupportedBuilders()
+        public override UInt32 GetSupportedFlags()
         {
-            byte flags = 0;
+            UInt32 flags = 0;
             flags &= CLASS_BUILDER;
 
             return flags;
         }
 
-        public override ILangWriter CreateLangWriter()
+        public override ILangWriter CreateLangWriter(string outDir)
         {
-            return new CppWriter(_outFile);
+            return new CppWriter(outDir);
         }
 
-        public override ILangClassBuilder CreateClassBuilder()
+        public override LangClassBuilderBase CreateClassBuilder()
         {
             return new CppClassBuilder();
         }

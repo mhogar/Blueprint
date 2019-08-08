@@ -6,8 +6,20 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public class CppClassBuilder : ILangClassBuilder
+    public class CppClassBuilder : LangClassBuilderBase
     {
+        public override UInt32 GetSupportedFlags()
+        {
+            UInt32 flags = 0;
+            flags &= CLASS_CONSTRUCTOR;
+            flags &= CLASS_MEMBER;
+            flags &= CLASS_FUNCTION;
+            flags &= CLASS_PROPERTY;
+            flags &= CLASS_SUB_CLASS;
+
+            return flags;
+        }
+
         private struct ClassObj
         {
             public string className;
@@ -39,13 +51,13 @@ namespace Blueprint.Logic
             _subClasses = new List<CppClassBuilder>();
         }
 
-        public void CreateClass(string className, AccessModifier accessModifier)
+        public override void CreateClass(string className, AccessModifier accessModifier)
         {
             _classObj.className = className;
             _classObj.accessModifier = accessModifier;
         }
 
-        public void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
+        public override void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
             bool isOverridable=false)
         {
             ClassFunction classFunction;
@@ -56,7 +68,7 @@ namespace Blueprint.Logic
             _functions.Add(classFunction);
         }
 
-        public void CreateClassMemeber(VariableObj variableObj, AccessModifier accessModifier)
+        public override void CreateClassMemeber(VariableObj variableObj, AccessModifier accessModifier)
         {
             ClassMemeber classMemeber;
             classMemeber.variableObj = variableObj;
@@ -65,7 +77,7 @@ namespace Blueprint.Logic
             _members.Add(classMemeber);
         }
 
-        public void CreateClassProperty(VariableObj variableObj, AccessModifier accessModifier)
+        public override void CreateClassProperty(VariableObj variableObj, AccessModifier accessModifier)
         {
             if (accessModifier != AccessModifier.PRIVATE)
             {
@@ -88,7 +100,7 @@ namespace Blueprint.Logic
             CreateClassFunction(setFunc, AccessModifier.PUBLIC, false);
         }
 
-        public void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
+        public override void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
         {
             var constructor = new FunctionObj("", _classObj.className);
             constructor.FuncParams = constructorParams;
@@ -98,7 +110,7 @@ namespace Blueprint.Logic
             CreateClassFunction(deconstructor, accessModifier, true);
         }
 
-        public void CreateSubClass(ILangClassBuilder classBuilder, AccessModifier accessModifier)
+        public override void CreateSubClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
             var cppClassBuilder = classBuilder as CppClassBuilder;
             if (cppClassBuilder == null)
@@ -109,7 +121,7 @@ namespace Blueprint.Logic
             _subClasses.Add(cppClassBuilder);
         }
 
-        public void WriteClass(ILangWriter langWriter)
+        public override void WriteClass(ILangWriter langWriter)
         {
             var cppWriter = langWriter as CppWriter;
             if (cppWriter == null)

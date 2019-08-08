@@ -12,9 +12,9 @@ namespace Blueprint
         static void Main(string[] args)
         {
             const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
-            LangWriterFactoryBase langWriterFactory = new CppWriterFactory(OUT_DIR + "Foo");
+            LangWriterFactoryBase langWriterFactory = new CppWriterFactory();
 
-            var writer = langWriterFactory.CreateLangWriter();
+            var writer = langWriterFactory.CreateLangWriter(OUT_DIR + "Foo");
             writer.BeginWriter();
             {
                 var classBuilder = langWriterFactory.CreateClassBuilder();
