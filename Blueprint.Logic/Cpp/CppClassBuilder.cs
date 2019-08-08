@@ -8,18 +8,6 @@ namespace Blueprint.Logic
 {
     public class CppClassBuilder : LangClassBuilderBase
     {
-        public override UInt32 GetSupportedFlags()
-        {
-            UInt32 flags = 0;
-            flags &= CLASS_CONSTRUCTOR;
-            flags &= CLASS_MEMBER;
-            flags &= CLASS_FUNCTION;
-            flags &= CLASS_PROPERTY;
-            flags &= CLASS_SUB_CLASS;
-
-            return flags;
-        }
-
         private struct ClassObj
         {
             public string className;
@@ -49,6 +37,18 @@ namespace Blueprint.Logic
             _members = new List<ClassMemeber>();
             _functions = new List<ClassFunction>();
             _subClasses = new List<CppClassBuilder>();
+        }
+
+        public override UInt32 GetSupportedFlags()
+        {
+            UInt32 flags = 0;
+            flags &= CLASS_CONSTRUCTOR;
+            flags &= CLASS_MEMBER;
+            flags &= CLASS_FUNCTION;
+            flags &= CLASS_PROPERTY;
+            flags &= CLASS_SUB_CLASS;
+
+            return flags;
         }
 
         public override void CreateClass(string className, AccessModifier accessModifier)
