@@ -61,7 +61,6 @@ namespace Blueprint.Logic
                 )
             );
             HeaderStream.WriteLine("#pragma once");
-            HeaderStream.NewLine();
 
             SourceStream = new LangStreamWrapper(
                new StreamWriter(

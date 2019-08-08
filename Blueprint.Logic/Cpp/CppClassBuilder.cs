@@ -115,7 +115,7 @@ namespace Blueprint.Logic
             var cppClassBuilder = classBuilder as CppClassBuilder;
             if (cppClassBuilder == null)
             {
-                throw new InvalidCastException("ILangClassBuilder was not a CppClassBuilder.");
+                throw new InvalidCastException("LangClassBuilderBase was not a CppClassBuilder.");
             }
 
             _subClasses.Add(cppClassBuilder);
@@ -176,7 +176,7 @@ namespace Blueprint.Logic
                 }
             }
 
-            //write the header file
+            //write the file
             {
                 stream.WriteLine("class " + _classObj.className);
                 stream.WriteLine("{");
@@ -212,7 +212,6 @@ namespace Blueprint.Logic
         {
             foreach (ClassFunction classFunc in _functions)
             {
-                stream.NewLine();
                 stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _classObj.className));
                 stream.WriteLine("{");
 

@@ -41,16 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cpp\CppFileBuilder.cs" />
     <Compile Include="Cpp\CppWriter.cs" />
-    <Compile Include="Cpp\CppWriterFactory.cs" />
+    <Compile Include="Cpp\CppFactory.cs" />
     <Compile Include="FilenameInfo.cs" />
     <Compile Include="LangClassBuilderBase.cs" />
-    <Compile Include="ILangCoreWriter.cs" />
+    <Compile Include="LangFileBuilderBase.cs" />
     <Compile Include="Cpp\CppClassBuilder.cs" />
     <Compile Include="ILangWriter.cs" />
     <Compile Include="ISupportedFlags.cs" />
     <Compile Include="LangStreamWrapper.cs" />
-    <Compile Include="LangWriterFactoryBase.cs" />
+    <Compile Include="LangFactoryBase.cs" />
     <Compile Include="ObjDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

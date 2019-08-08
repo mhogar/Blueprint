@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blueprint.Logic
+namespace Blueprint.Logic.Cpp
 {
-    public class CppWriterFactory : LangWriterFactoryBase
+    public class CppFactory : LangFactoryBase
     {
-        public CppWriterFactory()
-        {
-        }
-
         public override UInt32 GetSupportedFlags()
         {
             UInt32 flags = 0;
@@ -23,6 +19,11 @@ namespace Blueprint.Logic
         public override ILangWriter CreateLangWriter(string outDir)
         {
             return new CppWriter(outDir);
+        }
+
+        public override LangFileBuilderBase CreateFileBuilder()
+        {
+            return new CppFileBuilder();
         }
 
         public override LangClassBuilderBase CreateClassBuilder()
