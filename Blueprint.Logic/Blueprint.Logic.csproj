@@ -45,13 +45,13 @@
     <Compile Include="Cpp\CppWriter.cs" />
     <Compile Include="Cpp\CppFactory.cs" />
     <Compile Include="FilenameInfo.cs" />
-    <Compile Include="LangClassBuilderBase.cs" />
-    <Compile Include="LangFileBuilderBase.cs" />
+    <Compile Include="LangBase\LangClassBuilderBase.cs" />
+    <Compile Include="LangBase\LangFileBuilderBase.cs" />
     <Compile Include="Cpp\CppClassBuilder.cs" />
-    <Compile Include="ILangWriter.cs" />
+    <Compile Include="LangBase\ILangWriter.cs" />
     <Compile Include="ISupportedFlags.cs" />
     <Compile Include="LangStreamWrapper.cs" />
-    <Compile Include="LangFactoryBase.cs" />
+    <Compile Include="LangBase\LangFactoryBase.cs" />
     <Compile Include="ObjDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

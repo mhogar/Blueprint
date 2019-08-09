@@ -35,12 +35,12 @@ namespace Blueprint.Logic.Cpp
             throw new NotImplementedException();
         }
 
-        public override void CreateFileClass(LangClassBuilderBase classBuilder)
+        public override void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
             var cppClassBuilder = classBuilder as CppClassBuilder;
             if (cppClassBuilder == null)
             {
-                throw new InvalidCastException("LangClassBuilderBase was not a CppClassBuilder.");
+                throw new ArgumentException("LangClassBuilderBase was not a CppClassBuilder.");
             }
 
             _classes.Add(cppClassBuilder);
@@ -51,7 +51,7 @@ namespace Blueprint.Logic.Cpp
             var cppWriter = langWriter as CppWriter;
             if (cppWriter == null)
             {
-                throw new InvalidCastException("ILangWriter was not a CppWriter.");
+                throw new ArgumentException("ILangWriter was not a CppWriter.");
             }
 
             foreach (CppClassBuilder classBuilder in _classes)

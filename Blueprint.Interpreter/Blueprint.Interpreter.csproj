@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClassContextEvaluator.cs" />
-    <Compile Include="ContextEvaluatorBase.cs" />
+    <Compile Include="ContextEvaluator\ClassContextEvaluator.cs" />
+    <Compile Include="ContextEvaluator\ContextEvaluatorBase.cs" />
+    <Compile Include="ContextEvaluator\FileContextEvaluator.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

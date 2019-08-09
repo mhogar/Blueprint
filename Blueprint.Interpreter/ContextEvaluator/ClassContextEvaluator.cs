@@ -12,7 +12,7 @@ namespace Blueprint.Interpreter
         private LangClassBuilderBase _classBuilder;
 
         public ClassContextEvaluator(LangFactoryBase langFactory, LangClassBuilderBase classBuilder)
-            : base(langFactory)
+            : base(langFactory, "Class")
         {
             _classBuilder = classBuilder;
         }

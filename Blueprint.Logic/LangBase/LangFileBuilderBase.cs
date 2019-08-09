@@ -15,7 +15,8 @@ namespace Blueprint.Logic
         public abstract uint GetSupportedFlags();
         public abstract void CreateFileVariable(VariableObj variableObj);
         public abstract void CreateFileFunction(FunctionObj functionObj);
-        public abstract void CreateFileClass(LangClassBuilderBase classBuilder);
+        public abstract void CreateFileClass(
+            LangClassBuilderBase classBuilder, AccessModifier accessModifier = AccessModifier.PUBLIC);
         public abstract void WriteFile(ILangWriter langWriter);
     }
 }

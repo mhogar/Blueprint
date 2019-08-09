@@ -16,9 +16,15 @@ namespace Blueprint.Interpreter
 
         protected LangFactoryBase _langFactory;
 
-        public ContextEvaluatorBase(LangFactoryBase langFactory)
+        public string Name
+        {
+            get;
+        }
+
+        public ContextEvaluatorBase(LangFactoryBase langFactory, string name)
         {
             _langFactory = langFactory;
+            Name = name;
         }
 
         public abstract uint GetSupportedFlags();
