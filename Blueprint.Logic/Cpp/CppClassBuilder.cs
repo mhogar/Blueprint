@@ -8,10 +8,16 @@ namespace Blueprint.Logic
 {
     public class CppClassBuilder : LangClassBuilderBase
     {
-        private struct ClassObj
+        public override UInt32 GetSupportedFlags()
         {
-            public string className;
-            public AccessModifier accessModifier;
+            UInt32 flags = 0;
+            flags &= CLASS_CONSTRUCTOR;
+            flags &= CLASS_MEMBER;
+            flags &= CLASS_FUNCTION;
+            flags &= CLASS_PROPERTY;
+            flags &= CLASS_SUB_CLASS;
+
+            return flags;
         }
 
         private struct ClassMemeber
@@ -27,34 +33,27 @@ namespace Blueprint.Logic
             public bool isOverridable;
         }
 
-        private ClassObj _classObj;
+        private struct InnerClass
+        {
+            public CppClassBuilder classBuilder;
+            public AccessModifier accessModifier;
+        }
+
+        private string _className;
         private List<ClassMemeber> _members;
         private List<ClassFunction> _functions;
-        private List<CppClassBuilder> _subClasses;
+        private List<InnerClass> _subClasses;
 
         public CppClassBuilder()
         {
             _members = new List<ClassMemeber>();
             _functions = new List<ClassFunction>();
-            _subClasses = new List<CppClassBuilder>();
+            _subClasses = new List<InnerClass>();
         }
 
-        public override UInt32 GetSupportedFlags()
+        public override void CreateClass(string className)
         {
-            UInt32 flags = 0;
-            flags &= CLASS_CONSTRUCTOR;
-            flags &= CLASS_MEMBER;
-            flags &= CLASS_FUNCTION;
-            flags &= CLASS_PROPERTY;
-            flags &= CLASS_SUB_CLASS;
-
-            return flags;
-        }
-
-        public override void CreateClass(string className, AccessModifier accessModifier)
-        {
-            _classObj.className = className;
-            _classObj.accessModifier = accessModifier;
+            _className = className;
         }
 
         public override void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
@@ -102,15 +101,15 @@ namespace Blueprint.Logic
 
         public override void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
         {
-            var constructor = new FunctionObj("", _classObj.className);
+            var constructor = new FunctionObj("", _className);
             constructor.FuncParams = constructorParams;
             CreateClassFunction(constructor, accessModifier);
 
-            var deconstructor = new FunctionObj("", "~" + _classObj.className);
+            var deconstructor = new FunctionObj("", "~" + _className);
             CreateClassFunction(deconstructor, accessModifier, true);
         }
 
-        public override void CreateSubClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
+        public override void CreateInnerClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
             var cppClassBuilder = classBuilder as CppClassBuilder;
             if (cppClassBuilder == null)
@@ -118,7 +117,11 @@ namespace Blueprint.Logic
                 throw new InvalidCastException("LangClassBuilderBase was not a CppClassBuilder.");
             }
 
-            _subClasses.Add(cppClassBuilder);
+            InnerClass innerClass;
+            innerClass.classBuilder = cppClassBuilder;
+            innerClass.accessModifier = accessModifier;
+
+            _subClasses.Add(innerClass);
         }
 
         public override void WriteClass(ILangWriter langWriter)
@@ -178,7 +181,7 @@ namespace Blueprint.Logic
 
             //write the file
             {
-                stream.WriteLine("class " + _classObj.className);
+                stream.WriteLine("class " + _className);
                 stream.WriteLine("{");
                 {
                     var memberStringTuples = new List<Tuple<string, List<string>>>();
@@ -212,7 +215,7 @@ namespace Blueprint.Logic
         {
             foreach (ClassFunction classFunc in _functions)
             {
-                stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _classObj.className));
+                stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _className));
                 stream.WriteLine("{");
 
                 stream.IncreaseTab();

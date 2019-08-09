@@ -8,11 +8,11 @@ namespace Blueprint.Logic
 {
     public abstract class LangFileBuilderBase : ISupportedFlags
     {
-        public static readonly UInt32 FILE_VARAIBLE = 0x1;
-        public static readonly UInt32 FILE_FUNCTION = 0x2;
-        public static readonly UInt32 FILE_CLASS = 0x4;
+        public static readonly uint FILE_VARAIBLE = 0x1;
+        public static readonly uint FILE_FUNCTION = 0x2;
+        public static readonly uint FILE_CLASS = 0x4;
 
-        public abstract UInt32 GetSupportedFlags();
+        public abstract uint GetSupportedFlags();
         public abstract void CreateFileVariable(VariableObj variableObj);
         public abstract void CreateFileFunction(FunctionObj functionObj);
         public abstract void CreateFileClass(LangClassBuilderBase classBuilder);

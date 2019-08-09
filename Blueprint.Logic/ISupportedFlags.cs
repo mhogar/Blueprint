@@ -8,6 +8,6 @@ namespace Blueprint.Logic
 {
     public interface ISupportedFlags
     {
-        UInt32 GetSupportedFlags();
+        uint GetSupportedFlags();
     }
 }

@@ -11,27 +11,46 @@ namespace Blueprint.Interpreter
     {
         private LangClassBuilderBase _classBuilder;
 
-        public ClassContextEvaluator(LangClassBuilderBase classBuilder)
+        public ClassContextEvaluator(LangFactoryBase langFactory, LangClassBuilderBase classBuilder)
+            : base(langFactory)
         {
             _classBuilder = classBuilder;
         }
 
-        public override void Evaluate(Interpreter.Identifier identifier, List<string> parameters)
+        public override uint GetSupportedFlags()
         {
-            switch(identifier)
-            {
-                case Interpreter.Identifier.FUNCTION:
+            uint flags = 0;
+            flags &= EVALUATE_VARIABLE;
+            flags &= EVALUATE_PROPERTY;
+            flags &= EVALUATE_FUNCTION;
+            flags &= EVALUATE_CLASS;
 
-                    break;
-                case Interpreter.Identifier.VARIABLE:
-                    break;
-                case Interpreter.Identifier.PROPERTY:
-                    break;
-                case Interpreter.Identifier.CLASS:
-                    break;
-                default:
-                    throw new InvalidIdentifierException();
-            }
+            return flags;
+        }
+
+        public override void EvaluateVariable(VariableObj variableObj, List<string> extraParams)
+        {
+            _classBuilder.CreateClassMemeber(variableObj);
+        }
+
+        public override void EvaluateProperty(VariableObj variableObj, List<string> extraParams)
+        {
+            _classBuilder.CreateClassProperty(variableObj);
+        }
+
+        public override void EvaluateFunction(FunctionObj functionObj, List<string> extraParams)
+        {
+            _classBuilder.CreateClassFunction(functionObj);
+        }
+
+        public override LangClassBuilderBase EvaluateClass(string className, List<string> extraParams)
+        {
+            LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
+            classBuilder.CreateClass(className);
+
+            _classBuilder.CreateInnerClass(classBuilder);
+
+            return classBuilder;
         }
     }
 }

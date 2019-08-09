@@ -21,7 +21,7 @@ namespace Blueprint
                 var fileBuilder = langWriterFactory.CreateFileBuilder();
                 {
                     var classBuilder = langWriterFactory.CreateClassBuilder();
-                    classBuilder.CreateClass("Foo", AccessModifier.PUBLIC);
+                    classBuilder.CreateClass("Foo");
                     classBuilder.CreateClassProperty(new VariableObj("int", "foo1"), AccessModifier.PROTECTED);
 
                     fileBuilder.CreateFileClass(classBuilder);

@@ -15,9 +15,9 @@ namespace Blueprint.Logic.Cpp
             _classes = new List<CppClassBuilder>();
         }
 
-        public override UInt32 GetSupportedFlags()
+        public override uint GetSupportedFlags()
         {
-            UInt32 flags = 0;
+            uint flags = 0;
             flags &= FILE_VARAIBLE;
             flags &= FILE_FUNCTION;
             flags &= FILE_CLASS;

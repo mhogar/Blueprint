@@ -8,9 +8,9 @@ namespace Blueprint.Logic.Cpp
 {
     public class CppFactory : LangFactoryBase
     {
-        public override UInt32 GetSupportedFlags()
+        public override uint GetSupportedFlags()
         {
-            UInt32 flags = 0;
+            uint flags = 0;
             flags &= CLASS_BUILDER;
 
             return flags;
