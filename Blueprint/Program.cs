@@ -15,20 +15,19 @@ namespace Blueprint
             const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
             LangFactoryBase langWriterFactory = new CppFactory();
 
-            var writer = langWriterFactory.CreateLangWriter(OUT_DIR + "Foo");
-            writer.BeginWriter();
+            var writer = langWriterFactory.CreateLangWriter();
+            var fileBuilder = langWriterFactory.CreateFileBuilder("Foo");
+
+            writer.BeginWriter(OUT_DIR + fileBuilder.Filename);
             {
-                var fileBuilder = langWriterFactory.CreateFileBuilder();
-                {
-                    var classBuilder = langWriterFactory.CreateClassBuilder();
-                    classBuilder.CreateClass("Foo");
-                    classBuilder.CreateClassProperty(new VariableObj("int", "foo1"), AccessModifier.PROTECTED);
+                var classBuilder = langWriterFactory.CreateClassBuilder();
+                classBuilder.CreateClass("Foo");
+                classBuilder.CreateClassProperty(new VariableObj("int", "foo1"), AccessModifier.PROTECTED);
 
-                    fileBuilder.CreateFileClass(classBuilder);
-                }
-
-                fileBuilder.WriteFile(writer);
+                fileBuilder.CreateFileClass(classBuilder);
             }
+
+            fileBuilder.WriteFile(writer);
             writer.EndWriter();
 
             Console.WriteLine("Press enter to exit...");

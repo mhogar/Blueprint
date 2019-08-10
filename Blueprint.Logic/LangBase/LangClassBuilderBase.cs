@@ -26,6 +26,6 @@ namespace Blueprint.Logic
             VariableObj variableObj, AccessModifier accessModifier = AccessModifier.PRIVATE);
         public abstract void CreateInnerClass(
             LangClassBuilderBase classWriter, AccessModifier accessModifier = AccessModifier.PRIVATE);
-        public abstract void WriteClass(ILangWriter langWriter);
+        public abstract void WriteClass(LangWriterBase langWriter);
     }
 }

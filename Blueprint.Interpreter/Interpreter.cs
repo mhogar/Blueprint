@@ -26,13 +26,22 @@ namespace Blueprint.Interpreter
         {
             _contextStack = new Stack<ContextEvaluatorBase>();
             _langFactory = langFactory;
-
-            //the interpreter starts in file context
-            _contextStack.Push(new FileContextEvaluator(langFactory, langFactory.CreateFileBuilder()));
         }
 
-        public void InterpretStream(Stream stream)
+        public void InterpretBlueprint(string filename)
         {
+            var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            InterpretBlueprint(stream);
+            stream.Close();
+        }
+
+        public void InterpretBlueprint(Stream stream)
+        {
+            const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
+            LangWriterBase langWriter = _langFactory.CreateLangWriter();
+
+            //_contextStack.Push(new FileContextEvaluator(_langFactory, _langFactory.CreateFileBuilder()));
+
             XmlReader reader = XmlReader.Create(stream);
             while (reader.Read())
             {

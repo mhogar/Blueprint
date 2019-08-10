@@ -7,17 +7,11 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public class CppWriter : ILangWriter
+    public class CppWriter : LangWriterBase
     {
-        private FilenameInfo _headerFilenameInfo;
-        private FilenameInfo _sourceFilenameInfo;
-
-        public CppWriter(string outFile)
+        public CppWriter()
         {
-            _headerFilenameInfo = new FilenameInfo(outFile + ".h");
             _headerStream = null;
-
-            _sourceFilenameInfo = new FilenameInfo(outFile + ".cpp");
             _sourceStream = null;
         }
 
@@ -53,24 +47,26 @@ namespace Blueprint.Logic
             }
         }
 
-        public void BeginWriter()
+        public override void BeginWriter(string filename)
         {
+            var headerFilenameInfo = new FilenameInfo(filename);
+            headerFilenameInfo.Extname = ".h";
             HeaderStream = new LangStreamWrapper(
                 new StreamWriter(
-                    new FileStream(_headerFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
+                    new FileStream(headerFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                 )
             );
-            HeaderStream.WriteLine("#pragma once");
 
+            var sourceFilenameInfo = new FilenameInfo(filename);
+            sourceFilenameInfo.Extname = ".cpp";
             SourceStream = new LangStreamWrapper(
                new StreamWriter(
-                   new FileStream(_sourceFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
+                   new FileStream(sourceFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                )
            );
-            SourceStream.WriteLine($"#include \"{_headerFilenameInfo.BaseAndExtname}\"");
         }
 
-        public void EndWriter()
+        public override void EndWriter()
         {
             HeaderStream.Close();
             SourceStream.Close();

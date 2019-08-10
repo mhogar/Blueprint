@@ -10,7 +10,7 @@ namespace Blueprint.Logic.Cpp
     {
         private List<CppClassBuilder> _classes;
 
-        public CppFileBuilder()
+        public CppFileBuilder(string filename) : base(filename)
         {
             _classes = new List<CppClassBuilder>();
         }
@@ -46,18 +46,22 @@ namespace Blueprint.Logic.Cpp
             _classes.Add(cppClassBuilder);
         }
 
-        public override void WriteFile(ILangWriter langWriter)
+        public override void WriteFile(LangWriterBase langWriter)
         {
             var cppWriter = langWriter as CppWriter;
             if (cppWriter == null)
             {
-                throw new ArgumentException("ILangWriter was not a CppWriter.");
+                throw new ArgumentException("LangWriterBase was not a CppWriter.");
             }
 
+            //write the beginning of the files
+            cppWriter.HeaderStream.WriteLine("#pragma once");
+            cppWriter.SourceStream.WriteLine($"#include \"{Filename}.h\"");
+
+            //write any classes
             foreach (CppClassBuilder classBuilder in _classes)
             {
                 cppWriter.HeaderStream.NewLine();
-                cppWriter.SourceStream.NewLine();
                 classBuilder.WriteClass(cppWriter);
             }
 

@@ -10,8 +10,8 @@ namespace Blueprint.Logic
     {
         public static readonly uint CLASS_BUILDER = 0x1;
 
-        public abstract ILangWriter CreateLangWriter(string outDir);
-        public abstract LangFileBuilderBase CreateFileBuilder();
+        public abstract LangWriterBase CreateLangWriter();
+        public abstract LangFileBuilderBase CreateFileBuilder(string filename);
         public abstract LangClassBuilderBase CreateClassBuilder();
         public abstract uint GetSupportedFlags();
     }

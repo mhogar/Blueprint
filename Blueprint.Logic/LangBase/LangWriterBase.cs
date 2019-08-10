@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public interface ILangWriter
+    public abstract class LangWriterBase
     {
-        void BeginWriter();
-        void EndWriter();
+        public abstract void BeginWriter(string filename);
+        public abstract void EndWriter();
     }
 }

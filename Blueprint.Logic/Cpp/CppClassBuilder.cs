@@ -124,12 +124,12 @@ namespace Blueprint.Logic
             _subClasses.Add(innerClass);
         }
 
-        public override void WriteClass(ILangWriter langWriter)
+        public override void WriteClass(LangWriterBase langWriter)
         {
             var cppWriter = langWriter as CppWriter;
             if (cppWriter == null)
             {
-                throw new ArgumentException("ILangWriter was not a CppWriter.");
+                throw new ArgumentException("LangWriterBase was not a CppWriter.");
             }
 
             WriterHeaderFile(cppWriter.HeaderStream);
@@ -215,6 +215,8 @@ namespace Blueprint.Logic
         {
             foreach (ClassFunction classFunc in _functions)
             {
+                stream.NewLine();
+
                 stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _className));
                 stream.WriteLine("{");
 
