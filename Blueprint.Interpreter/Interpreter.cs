@@ -2,9 +2,11 @@
 using Blueprint.Logic.Cpp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Blueprint.Interpreter
 {
@@ -27,6 +29,19 @@ namespace Blueprint.Interpreter
 
             //the interpreter starts in file context
             _contextStack.Push(new FileContextEvaluator(langFactory, langFactory.CreateFileBuilder()));
+        }
+
+        public void ReadFile(Stream stream)
+        {
+            XmlReader xmlReader = XmlReader.Create(stream);
+            //read tag
+            //if identifier open tag
+                //create object using attributes
+                //read tags and add them to dictionary until reached identifier end tag or content start tag
+                //Call current evaluator with object and dictionary
+                //if open content tag, create new context
+            //else if end content tag
+                //pop context off stack
         }
 
         public Result InterpretLine(string line)

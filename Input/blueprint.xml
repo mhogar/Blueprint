@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Blueprint>
+  <File name="Foo">
+    <content>
+      <Class name="Foo">
+        <accessModifier>public</accessModifier>
+        <content>
+          <Variable name="member" type="int">
+            <accessModifier>private</accessModifier>
+          </Variable>
+          <Function name="ClassFunction" returnType="void">
+            <params>
+              <int>param1</int>
+              <bool>param2</bool>
+            </params>
+            <accessModifier>public</accessModifier>
+          </Function>
+          <Property name="property" type="bool">
+            <accessModifier>protected</accessModifier>
+          </Property>
+        </content>
+      </Class>
+    </content>
+  </File>
+</Blueprint>
