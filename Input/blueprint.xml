@@ -9,10 +9,10 @@
             <accessModifier>private</accessModifier>
           </Variable>
           <Function name="ClassFunction" returnType="void">
-            <params>
+            <!-->params>
               <int>param1</int>
               <bool>param2</bool>
-            </params>
+            </params-->
             <accessModifier>public</accessModifier>
           </Function>
           <Property name="property" type="bool">

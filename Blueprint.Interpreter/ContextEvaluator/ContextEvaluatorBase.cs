@@ -28,9 +28,9 @@ namespace Blueprint.Interpreter
         }
 
         public abstract uint GetSupportedFlags();
-        public abstract void EvaluateVariable(VariableObj variableObj, List<string> extraParams);
-        public abstract void EvaluateFunction(FunctionObj functionObj, List<string> extraParams);
-        public abstract void EvaluateProperty(VariableObj variableObj, List<string> extraParams);
-        public abstract LangClassBuilderBase EvaluateClass(string className, List<string> extraParams);
+        public abstract void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams);
+        public abstract void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams);
+        public abstract void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams);
+        public abstract LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams);
     }
 }

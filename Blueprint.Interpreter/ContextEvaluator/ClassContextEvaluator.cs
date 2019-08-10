@@ -28,22 +28,22 @@ namespace Blueprint.Interpreter
             return flags;
         }
 
-        public override void EvaluateVariable(VariableObj variableObj, List<string> extraParams)
+        public override void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
             _classBuilder.CreateClassMemeber(variableObj);
         }
 
-        public override void EvaluateProperty(VariableObj variableObj, List<string> extraParams)
+        public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
             _classBuilder.CreateClassProperty(variableObj);
         }
 
-        public override void EvaluateFunction(FunctionObj functionObj, List<string> extraParams)
+        public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
             _classBuilder.CreateClassFunction(functionObj);
         }
 
-        public override LangClassBuilderBase EvaluateClass(string className, List<string> extraParams)
+        public override LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams)
         {
             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
             classBuilder.CreateClass(className);

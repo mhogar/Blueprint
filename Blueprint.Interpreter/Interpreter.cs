@@ -31,20 +31,96 @@ namespace Blueprint.Interpreter
             _contextStack.Push(new FileContextEvaluator(langFactory, langFactory.CreateFileBuilder()));
         }
 
-        public void ReadFile(Stream stream)
+        public void InterpretStream(Stream stream)
         {
-            XmlReader xmlReader = XmlReader.Create(stream);
-            //read tag
-            //if identifier open tag
-                //create object using attributes
-                //read tags and add them to dictionary until reached identifier end tag or content start tag
-                //Call current evaluator with object and dictionary
-                //if open content tag, create new context
-            //else if end content tag
-                //pop context off stack
+            XmlReader reader = XmlReader.Create(stream);
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    ContextEvaluatorBase currentContext = _contextStack.Peek();
+                    string identifier = reader.Name;
+                    switch (identifier)
+                    {
+                        case "Variable":
+                            var variableObj = new VariableObj(
+                                GetAttributeOrDefault(reader, "type", ""),
+                                GetAttributeOrDefault(reader, "name", "")
+                            );
+                            currentContext.EvaluateVariable(variableObj, ReadExtraParams(reader, identifier));
+                            break;
+                        case "Function":
+                            var functionObj = new FunctionObj(
+                                GetAttributeOrDefault(reader, "type", ""),
+                                GetAttributeOrDefault(reader, "name", "")
+                            );
+
+                            //TODO: read function params
+
+                            currentContext.EvaluateFunction(functionObj, ReadExtraParams(reader, identifier));
+                            break;
+                        case "Property":
+                            var propertyObj = new VariableObj(
+                                GetAttributeOrDefault(reader, "type", ""),
+                                GetAttributeOrDefault(reader, "name", "")
+                            );
+                            currentContext.EvaluateProperty(propertyObj, ReadExtraParams(reader, identifier));
+                            break;
+                        case "Class":
+                            string className = GetAttributeOrDefault(reader, "name", "");
+                            LangClassBuilderBase classBuilder = 
+                                currentContext.EvaluateClass(className, ReadExtraParams(reader, identifier));
+
+                            if (IsContentBeginTag(reader))
+                            {
+                                _contextStack.Push(new ClassContextEvaluator(_langFactory, classBuilder));
+                            }
+                            break;
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "content")
+                {
+                    _contextStack.Pop();
+                }
+            }
         }
 
-        public Result InterpretLine(string line)
+        private Dictionary<string, string> ReadExtraParams(XmlReader reader, string identifier)
+        {
+            var extraParams = new Dictionary<string, string>();
+
+            while(reader.Read()
+                && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == identifier)
+                && !(IsContentBeginTag(reader)))
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    string key = reader.Name;
+                    reader.Read();
+                    extraParams.Add(key, reader.Value);
+                }
+            }
+
+            return extraParams;
+        }
+
+        private string GetAttributeOrDefault(XmlReader reader, string name, string defaultValue)
+        {
+            string value = reader.GetAttribute(name);
+            if (value == null)
+            {
+                return defaultValue;
+            }
+
+            return value;
+        }
+
+        private bool IsContentBeginTag(XmlReader reader)
+        {
+            return reader.NodeType == XmlNodeType.Element && reader.Name == "content";
+        }
+
+        /*public Result InterpretLine(string line)
         {
             Result result;
             result.success = true;
@@ -128,6 +204,6 @@ namespace Blueprint.Interpreter
             }
 
             return result;
-        }
+        }*/
     }
 }

@@ -27,23 +27,23 @@ namespace Blueprint.Interpreter
             return flags;
         }
 
-        public override void EvaluateVariable(VariableObj variableObj, List<string> extraParams)
+        public override void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
             _fileBuilder.CreateFileVariable(variableObj);
         }
 
-        public override void EvaluateProperty(VariableObj variableObj, List<string> extraParams)
+        public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
             //TODO: return Interpreter.Result instead of throwing exception
             throw new InvalidOperationException("FileContext does not support EvaluateProperty.");
         }
 
-        public override void EvaluateFunction(FunctionObj functionObj, List<string> extraParams)
+        public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
             _fileBuilder.CreateFileFunction(functionObj);
         }
 
-        public override LangClassBuilderBase EvaluateClass(string className, List<string> extraParams)
+        public override LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams)
         {
             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
             classBuilder.CreateClass(className);
