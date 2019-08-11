@@ -155,5 +155,20 @@ namespace Blueprint.Interpreter
         {
             return reader.NodeType == XmlNodeType.Element && reader.Name == "content";
         }
+
+        public static AccessModifier ParseAccessModifier(string accessModifierStr)
+        {
+            switch (accessModifierStr)
+            {
+                case "public":
+                    return AccessModifier.PUBLIC;
+                case "protected":
+                    return AccessModifier.PROTECTED;
+                case "private":
+                    return AccessModifier.PRIVATE;
+                default:
+                    throw new ArgumentException("Invalid access modifier string.");
+            }
+        }
     }
 }

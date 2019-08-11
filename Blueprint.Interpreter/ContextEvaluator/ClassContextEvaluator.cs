@@ -30,17 +30,20 @@ namespace Blueprint.Interpreter
 
         public override void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassMemeber(variableObj);
+            _classBuilder.CreateClassMemeber(variableObj, 
+                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
         public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassProperty(variableObj);
+            _classBuilder.CreateClassProperty(variableObj,
+                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
         public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassFunction(functionObj);
+            _classBuilder.CreateClassFunction(functionObj,
+                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
         public override LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams)
@@ -48,9 +51,22 @@ namespace Blueprint.Interpreter
             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
             classBuilder.CreateClass(className);
 
-            _classBuilder.CreateInnerClass(classBuilder);
+            _classBuilder.CreateInnerClass(classBuilder,
+                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
 
             return classBuilder;
+        }
+
+        private AccessModifier GetAccessModifierFromExtraParams(
+            Dictionary<string, string> extraParams, AccessModifier defaultValue)
+        {
+            string accessModifierStr;
+            if (!extraParams.TryGetValue("accessModifier", out accessModifierStr))
+            {
+                return defaultValue;
+            }
+
+            return BlueprintInterpreter.ParseAccessModifier(accessModifierStr);
         }
     }
 }
