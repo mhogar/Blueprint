@@ -1,4 +1,5 @@
-﻿using Blueprint.Logic;
+﻿using Blueprint.Interpreter;
+using Blueprint.Logic;
 using Blueprint.Logic.Cpp;
 using System;
 using System.Collections.Generic;
@@ -12,23 +13,12 @@ namespace Blueprint
     {
         static void Main(string[] args)
         {
-            const string OUT_DIR = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
-            LangFactoryBase langWriterFactory = new CppFactory();
+            string inFile = "C:/Users/mhoga/Documents/Projects/Blueprint/Input/blueprint.xml";
+            string outDir = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
+            LangFactoryBase langFactory = new CppFactory();
 
-            var writer = langWriterFactory.CreateLangWriter();
-            var fileBuilder = langWriterFactory.CreateFileBuilder("Foo");
-
-            writer.BeginWriter(OUT_DIR + fileBuilder.Filename);
-            {
-                var classBuilder = langWriterFactory.CreateClassBuilder();
-                classBuilder.CreateClass("Foo");
-                classBuilder.CreateClassProperty(new VariableObj("int", "foo1"), AccessModifier.PROTECTED);
-
-                fileBuilder.CreateFileClass(classBuilder);
-            }
-
-            fileBuilder.WriteFile(writer);
-            writer.EndWriter();
+            var interpreter = new BlueprintInterpreter(langFactory);
+            interpreter.InterpretBlueprint(inFile, outDir);
 
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();

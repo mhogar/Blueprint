@@ -34,7 +34,6 @@ namespace Blueprint.Interpreter
 
         public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            //TODO: return Interpreter.Result instead of throwing exception
             throw new InvalidOperationException("FileContext does not support EvaluateProperty.");
         }
 

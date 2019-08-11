@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Blueprint.Interpreter\Blueprint.Interpreter.csproj">
+      <Project>{A346C41B-A8AF-4808-A2EE-5E6DCBA93292}</Project>
+      <Name>Blueprint.Interpreter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Blueprint.Logic\Blueprint.Logic.csproj">
       <Project>{A67C2893-449C-4C76-ADFD-D532C3CD0361}</Project>
       <Name>Blueprint.Logic</Name>
