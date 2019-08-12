@@ -8,11 +8,7 @@
           <Variable name="member" type="int">
             <accessModifier>private</accessModifier>
           </Variable>
-          <Function name="ClassFunction" returnType="void">
-            <!-->params>
-              <int>param1</int>
-              <bool>param2</bool>
-            </params-->
+          <Function name="ClassFunction" returnType="void" params="param1:int param2:bool">
             <accessModifier>public</accessModifier>
           </Function>
           <Property name="property" type="bool">

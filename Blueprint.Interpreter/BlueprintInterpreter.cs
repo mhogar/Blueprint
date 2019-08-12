@@ -76,7 +76,13 @@ namespace Blueprint.Interpreter
                                 GetAttributeOrDefault(reader, "name", "")
                             );
 
-                            //TODO: read function params
+                            //parse the function params
+                            string[] funcParams = GetAttributeOrDefault(reader, "params", "").Split(' ');
+                            foreach (string funcParam in funcParams)
+                            {
+                                string[] tokens = funcParam.Split(':');
+                                functionObj.FuncParams.Add(new VariableObj(tokens[1], tokens[0]));
+                            }
 
                             currentContext.EvaluateFunction(functionObj, ReadExtraParams(reader, identifier));
                             break;
