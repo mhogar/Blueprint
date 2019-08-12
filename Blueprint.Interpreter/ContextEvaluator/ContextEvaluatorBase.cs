@@ -14,16 +14,13 @@ namespace Blueprint.Interpreter
         public static readonly uint EVALUATE_PROPERTY = 0X4;
         public static readonly uint EVALUATE_CLASS = 0X8;
 
-        protected LangFactoryBase _langFactory;
-
         public string Name
         {
             get;
         }
 
-        public ContextEvaluatorBase(LangFactoryBase langFactory, string name)
+        public ContextEvaluatorBase(string name)
         {
-            _langFactory = langFactory;
             Name = name;
         }
 
@@ -31,6 +28,6 @@ namespace Blueprint.Interpreter
         public abstract void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams);
         public abstract void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams);
         public abstract void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams);
-        public abstract LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams);
+        public abstract void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams);
     }
 }

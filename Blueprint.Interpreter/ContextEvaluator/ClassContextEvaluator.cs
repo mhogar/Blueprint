@@ -11,8 +11,8 @@ namespace Blueprint.Interpreter
     {
         private LangClassBuilderBase _classBuilder;
 
-        public ClassContextEvaluator(LangFactoryBase langFactory, LangClassBuilderBase classBuilder)
-            : base(langFactory, "Class")
+        public ClassContextEvaluator(LangClassBuilderBase classBuilder)
+            : base("Class")
         {
             _classBuilder = classBuilder;
         }
@@ -46,15 +46,10 @@ namespace Blueprint.Interpreter
                 GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
-        public override LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams)
+        public override void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
-            LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
-            classBuilder.CreateClass(className);
-
             _classBuilder.CreateInnerClass(classBuilder,
                 GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
-
-            return classBuilder;
         }
 
         private AccessModifier GetAccessModifierFromExtraParams(

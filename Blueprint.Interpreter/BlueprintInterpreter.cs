@@ -60,7 +60,7 @@ namespace Blueprint.Interpreter
                             ReadExtraParams(reader, identifier);
                             if (IsContentBeginTag(reader))
                             {
-                                _contextStack.Push(new FileContextEvaluator(_langFactory, currentFileBuilder));
+                                _contextStack.Push(new FileContextEvaluator(currentFileBuilder));
                             }
                             break;
                         case "Variable":
@@ -94,13 +94,13 @@ namespace Blueprint.Interpreter
                             currentContext.EvaluateProperty(propertyObj, ReadExtraParams(reader, identifier));
                             break;
                         case "Class":
-                            string className = GetAttributeOrDefault(reader, "name", "");
-                            LangClassBuilderBase classBuilder = 
-                                currentContext.EvaluateClass(className, ReadExtraParams(reader, identifier));
+                            LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
+                            classBuilder.CreateClass(GetAttributeOrDefault(reader, "name", ""));
+                            currentContext.EvaluateClass(classBuilder, ReadExtraParams(reader, identifier));
 
                             if (IsContentBeginTag(reader))
                             {
-                                _contextStack.Push(new ClassContextEvaluator(_langFactory, classBuilder));
+                                _contextStack.Push(new ClassContextEvaluator(classBuilder));
                             }
                             break;
                     }

@@ -11,8 +11,8 @@ namespace Blueprint.Interpreter
     {
         private LangFileBuilderBase _fileBuilder;
 
-        public FileContextEvaluator(LangFactoryBase langFactory, LangFileBuilderBase fileBuilder)
-            : base(langFactory, "File")
+        public FileContextEvaluator(LangFileBuilderBase fileBuilder)
+            : base("File")
         {
             _fileBuilder = fileBuilder;
         }
@@ -42,14 +42,9 @@ namespace Blueprint.Interpreter
             _fileBuilder.CreateFileFunction(functionObj);
         }
 
-        public override LangClassBuilderBase EvaluateClass(string className, Dictionary<string, string> extraParams)
+        public override void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
-            LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
-            classBuilder.CreateClass(className);
-
             _fileBuilder.CreateFileClass(classBuilder);
-
-            return classBuilder;
         }
     }
 }
