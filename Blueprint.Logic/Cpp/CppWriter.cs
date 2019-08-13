@@ -72,6 +72,45 @@ namespace Blueprint.Logic
             SourceStream.Close();
         }
 
+        public static string ConvertDataType(DataType dataType)
+        {
+            switch (dataType)
+            {
+                case DataType.NONE:
+                    return "";
+                case DataType.VOID:
+                    return "void";
+                case DataType.BOOLEAN:
+                    return "bool";
+                case DataType.CHAR:
+                    return "char";
+                case DataType.STRING:
+                    return "const char*";
+                case DataType.INT_8:
+                    return "char";
+                case DataType.INT_16:
+                    return "short";
+                case DataType.INT_32:
+                    return "int";
+                case DataType.INT_64:
+                    return "long long";
+                case DataType.UINT_8:
+                    return "unsigned char";
+                case DataType.UINT_16:
+                    return "unsigned short";
+                case DataType.UINT_32:
+                    return "unsigned int";
+                case DataType.UINT_64:
+                    return "unsigned long long";
+                case DataType.FLOAT_32:
+                    return "float";
+                case DataType.FLOAT_64:
+                    return "double";
+                default:
+                    throw new ArgumentException("Invalid data type.");
+            }
+        }
+
         public static string CreateVariableString(VariableObj variableObj, string namespaceName="")
         {
             string namespaceStr = "";
@@ -80,7 +119,7 @@ namespace Blueprint.Logic
                 namespaceStr = namespaceName + "::";
             }
 
-            return variableObj.Type + " " + namespaceStr + variableObj.Name;
+            return ConvertDataType(variableObj.Type) + " " + namespaceStr + variableObj.Name;
         }
 
         public static string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")

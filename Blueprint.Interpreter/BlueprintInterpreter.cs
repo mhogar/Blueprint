@@ -71,7 +71,7 @@ namespace Blueprint.Interpreter
                             break;
                         case "Variable":
                             var variableObj = new VariableObj(
-                                GetAttributeOrDefault(reader, "type", ""),
+                                ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
 
@@ -81,7 +81,7 @@ namespace Blueprint.Interpreter
                             break;
                         case "Function":
                             var functionObj = new FunctionObj(
-                                GetAttributeOrDefault(reader, "returnType", ""),
+                                ParseDataType(GetAttributeOrDefault(reader, "returnType", "")),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
 
@@ -90,7 +90,8 @@ namespace Blueprint.Interpreter
                             foreach (string funcParam in funcParams)
                             {
                                 string[] tokens = funcParam.Split(':');
-                                functionObj.FuncParams.Add(new VariableObj(tokens[1], tokens[0]));
+                                functionObj.FuncParams.Add(new VariableObj(
+                                    ParseDataType(tokens[1]), tokens[0]));
                             }
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
@@ -99,7 +100,7 @@ namespace Blueprint.Interpreter
                             break;
                         case "Property":
                             var propertyObj = new VariableObj(
-                                GetAttributeOrDefault(reader, "type", ""),
+                                ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
 
@@ -163,9 +164,9 @@ namespace Blueprint.Interpreter
             return value;
         }
 
-        public static AccessModifier ParseAccessModifier(string accessModifierStr)
+        public static AccessModifier ParseAccessModifier(string accessModifier)
         {
-            switch (accessModifierStr)
+            switch (accessModifier)
             {
                 case "public":
                     return AccessModifier.PUBLIC;
@@ -174,7 +175,46 @@ namespace Blueprint.Interpreter
                 case "private":
                     return AccessModifier.PRIVATE;
                 default:
-                    throw new ArgumentException("Invalid access modifier string.");
+                    throw new ArgumentException("Invalid access modifier string: " + accessModifier);
+            }
+        }
+
+        public static DataType ParseDataType(string dataType)
+        {
+            switch (dataType)
+            {
+                case "":
+                    return DataType.NONE;
+                case "void":
+                    return DataType.VOID;
+                case "boolean":
+                    return DataType.BOOLEAN;
+                case "char":
+                    return DataType.CHAR;
+                case "string":
+                    return DataType.STRING;
+                case "int8":
+                    return DataType.INT_8;
+                case "int16":
+                    return DataType.INT_16;
+                case "int32":
+                    return DataType.INT_32;
+                case "int64":
+                    return DataType.INT_64;
+                case "uint8":
+                    return DataType.UINT_8;
+                case "uint16":
+                    return DataType.UINT_16;
+                case "uint32":
+                    return DataType.UINT_32;
+                case "uint64":
+                    return DataType.UINT_64;
+                case "float":
+                    return DataType.FLOAT_32;
+                case "double":
+                    return DataType.FLOAT_64;
+                default:
+                    throw new ArgumentException("Invalid data type string: " + dataType);
             }
         }
     }

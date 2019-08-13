@@ -91,7 +91,7 @@ namespace Blueprint.Logic
             });
             CreateClassFunction(getFunc, AccessModifier.PUBLIC, false);
 
-            var setFunc = new FunctionObj("void", "set_" + variableObj.Name, (stream) =>
+            var setFunc = new FunctionObj(DataType.VOID, "set_" + variableObj.Name, (stream) =>
             {
                 stream.WriteLine("this->" + variableObj.Name + " = " + variableObj.Name + ";");
             });
@@ -101,11 +101,11 @@ namespace Blueprint.Logic
 
         public override void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
         {
-            var constructor = new FunctionObj("", _className);
+            var constructor = new FunctionObj(DataType.NONE, _className);
             constructor.FuncParams = constructorParams;
             CreateClassFunction(constructor, accessModifier);
 
-            var deconstructor = new FunctionObj("", "~" + _className);
+            var deconstructor = new FunctionObj(DataType.NONE, "~" + _className);
             CreateClassFunction(deconstructor, accessModifier, true);
         }
 

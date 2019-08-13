@@ -5,13 +5,13 @@
       <Class name="Foo">
         <accessModifier>public</accessModifier>
         <content>
-          <Variable name="member" type="int">
+          <Variable name="member" type="int32">
             <accessModifier>private</accessModifier>
           </Variable>
-          <Function name="ClassFunction" returnType="void" params="param1:int param2:bool">
+          <Function name="ClassFunction" returnType="void" params="param1:int32 param2:boolean">
             <accessModifier>public</accessModifier>
           </Function>
-          <Property name="property" type="bool">
+          <Property name="property" type="uint16">
             <accessModifier>protected</accessModifier>
           </Property>
         </content>
