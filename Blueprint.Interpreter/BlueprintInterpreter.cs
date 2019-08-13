@@ -12,19 +12,11 @@ namespace Blueprint.Interpreter
 {
     public class BlueprintInterpreter
     {
-        private Stack<ContextEvaluatorBase> _contextStack;
         private LangFactoryBase _langFactory;
-
-        public struct Result
-        {
-            public bool success;
-            public string message;
-            public uint lineNum;
-        }
+        private string _outDir;
 
         public BlueprintInterpreter(LangFactoryBase langFactory)
         {
-            _contextStack = new Stack<ContextEvaluatorBase>();
             _langFactory = langFactory;
         }
 
@@ -37,38 +29,55 @@ namespace Blueprint.Interpreter
 
         public void InterpretBlueprint(Stream stream, string outDir)
         {
-            LangFileBuilderBase currentFileBuilder = null;
-
+            _outDir = outDir;
             XmlReader reader = XmlReader.Create(stream);
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "Blueprint")
+                {
+                    InterpretContent(reader, null);
+                    break;
+                }
+            }
+        }
+
+        private void InterpretContent(XmlReader reader, ContextEvaluatorBase contextEvaluator)
+        {
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    ContextEvaluatorBase currentContext = null;
-                    if (_contextStack.Count > 0)
-                    {
-                        currentContext = _contextStack.Peek();
-                    }
-
                     string identifier = reader.Name;
+                    Dictionary<string, string> extraParams;
                     switch (identifier)
                     {
                         case "File":
                             string filename = GetAttributeOrDefault(reader, "name", "");
-                            currentFileBuilder = _langFactory.CreateFileBuilder(filename);
+                            LangFileBuilderBase fileBuilder = _langFactory.CreateFileBuilder();
 
-                            ReadExtraParams(reader, identifier);
-                            if (IsContentBeginTag(reader))
+                            InterpretIdentifier(reader, identifier, () =>
                             {
-                                _contextStack.Push(new FileContextEvaluator(currentFileBuilder));
+                                return new FileContextEvaluator(fileBuilder);
+                            });
+
+                            //write the file
+                            LangWriterBase langWriter = _langFactory.CreateLangWriter(_outDir + filename);
+                            langWriter.BeginWriter();
+                            {
+                                fileBuilder.WriteFile(langWriter);
                             }
+                            langWriter.EndWriter();
                             break;
                         case "Variable":
                             var variableObj = new VariableObj(
                                 GetAttributeOrDefault(reader, "type", ""),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
-                            currentContext.EvaluateVariable(variableObj, ReadExtraParams(reader, identifier));
+
+                            extraParams = InterpretIdentifier(reader, identifier, null);
+
+                            contextEvaluator.EvaluateVariable(variableObj, extraParams);
                             break;
                         case "Function":
                             var functionObj = new FunctionObj(
@@ -84,62 +93,59 @@ namespace Blueprint.Interpreter
                                 functionObj.FuncParams.Add(new VariableObj(tokens[1], tokens[0]));
                             }
 
-                            currentContext.EvaluateFunction(functionObj, ReadExtraParams(reader, identifier));
+                            extraParams = InterpretIdentifier(reader, identifier, null);
+
+                            contextEvaluator.EvaluateFunction(functionObj, extraParams);
                             break;
                         case "Property":
                             var propertyObj = new VariableObj(
                                 GetAttributeOrDefault(reader, "type", ""),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
-                            currentContext.EvaluateProperty(propertyObj, ReadExtraParams(reader, identifier));
+
+                            extraParams = InterpretIdentifier(reader, identifier, null);
+
+                            contextEvaluator.EvaluateProperty(propertyObj, extraParams);
                             break;
                         case "Class":
                             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
                             classBuilder.CreateClass(GetAttributeOrDefault(reader, "name", ""));
-                            currentContext.EvaluateClass(classBuilder, ReadExtraParams(reader, identifier));
 
-                            if (IsContentBeginTag(reader))
+                            extraParams = InterpretIdentifier(reader, identifier, () =>
                             {
-                                _contextStack.Push(new ClassContextEvaluator(classBuilder));
-                            }
+                                return new ClassContextEvaluator(classBuilder);
+                            });
+
+                            contextEvaluator.EvaluateClass(classBuilder, extraParams);
                             break;
-                    }
-                }
-                else if (reader.NodeType == XmlNodeType.EndElement)
-                {
-                    switch(reader.Name)
-                    {
-                        case "File":
-                            //write the file
-                            LangWriterBase langWriter = _langFactory.CreateLangWriter();
-                            langWriter.BeginWriter(outDir + currentFileBuilder.Filename);
-                            {
-                                currentFileBuilder.WriteFile(langWriter);
-                                currentFileBuilder = null;
-                            }
-                            langWriter.EndWriter();
-                            break;
-                        case "content":
-                            _contextStack.Pop();
-                            break;
+                        default:
+                            throw new InvalidOperationException(
+                                $"Identifier \"{identifier}\" not valid in context {contextEvaluator.Name}");
                     }
                 }
             }
         }
 
-        private Dictionary<string, string> ReadExtraParams(XmlReader reader, string identifier)
+        private Dictionary<string, string> InterpretIdentifier(
+            XmlReader reader, string identifier, Func<ContextEvaluatorBase> createContextEvaluatorDelegate)
         {
             var extraParams = new Dictionary<string, string>();
 
             while(reader.Read()
-                && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == identifier)
-                && !(IsContentBeginTag(reader)))
+                && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == identifier))
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    string key = reader.Name;
-                    reader.Read();
-                    extraParams.Add(key, reader.Value);
+                    string tagName = reader.Name;
+                    if (tagName == "content")
+                    {
+                        InterpretContent(reader, createContextEvaluatorDelegate());
+                    }
+                    else
+                    {
+                        reader.Read();
+                        extraParams.Add(tagName, reader.Value);
+                    }
                 }
             }
 
@@ -155,11 +161,6 @@ namespace Blueprint.Interpreter
             }
 
             return value;
-        }
-
-        private bool IsContentBeginTag(XmlReader reader)
-        {
-            return reader.NodeType == XmlNodeType.Element && reader.Name == "content";
         }
 
         public static AccessModifier ParseAccessModifier(string accessModifierStr)

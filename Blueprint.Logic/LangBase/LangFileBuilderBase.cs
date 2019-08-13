@@ -12,16 +12,6 @@ namespace Blueprint.Logic
         public static readonly uint FILE_FUNCTION = 0x2;
         public static readonly uint FILE_CLASS = 0x4;
 
-        public LangFileBuilderBase(string filename)
-        {
-            Filename = filename;
-        }
-
-        public string Filename
-        {
-            get;
-        }
-
         public abstract uint GetSupportedFlags();
         public abstract void CreateFileVariable(VariableObj variableObj);
         public abstract void CreateFileFunction(FunctionObj functionObj);

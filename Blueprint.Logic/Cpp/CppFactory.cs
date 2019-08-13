@@ -16,14 +16,14 @@ namespace Blueprint.Logic.Cpp
             return flags;
         }
 
-        public override LangWriterBase CreateLangWriter()
+        public override LangWriterBase CreateLangWriter(string filename)
         {
-            return new CppWriter();
+            return new CppWriter(filename);
         }
 
-        public override LangFileBuilderBase CreateFileBuilder(string filename)
+        public override LangFileBuilderBase CreateFileBuilder()
         {
-            return new CppFileBuilder(filename);
+            return new CppFileBuilder();
         }
 
         public override LangClassBuilderBase CreateClassBuilder()

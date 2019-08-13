@@ -8,7 +8,17 @@ namespace Blueprint.Logic
 {
     public abstract class LangWriterBase
     {
-        public abstract void BeginWriter(string filename);
+        public LangWriterBase(string filename)
+        {
+            Filename = filename;
+        }
+
+        public string Filename
+        {
+            get;
+        }
+
+        public abstract void BeginWriter();
         public abstract void EndWriter();
     }
 }

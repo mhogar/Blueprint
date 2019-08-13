@@ -10,7 +10,7 @@ namespace Blueprint.Logic.Cpp
     {
         private List<CppClassBuilder> _classes;
 
-        public CppFileBuilder(string filename) : base(filename)
+        public CppFileBuilder()
         {
             _classes = new List<CppClassBuilder>();
         }
@@ -56,7 +56,7 @@ namespace Blueprint.Logic.Cpp
 
             //write the beginning of the files
             cppWriter.HeaderStream.WriteLine("#pragma once");
-            cppWriter.SourceStream.WriteLine($"#include \"{Filename}.h\"");
+            cppWriter.SourceStream.WriteLine($"#include \"{new FilenameInfo(langWriter.Filename).Basename}.h\"");
 
             //write any classes
             foreach (CppClassBuilder classBuilder in _classes)
