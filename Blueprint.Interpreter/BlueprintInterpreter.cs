@@ -84,15 +84,7 @@ namespace Blueprint.Interpreter
                                 ParseDataType(GetAttributeOrDefault(reader, "returnType", "")),
                                 GetAttributeOrDefault(reader, "name", "")
                             );
-
-                            //parse the function params
-                            string[] funcParams = GetAttributeOrDefault(reader, "params", "").Split(' ');
-                            foreach (string funcParam in funcParams)
-                            {
-                                string[] tokens = funcParam.Split(':');
-                                functionObj.FuncParams.Add(new VariableObj(
-                                    ParseDataType(tokens[1]), tokens[0]));
-                            }
+                            functionObj.FuncParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
@@ -107,6 +99,13 @@ namespace Blueprint.Interpreter
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
                             contextEvaluator.EvaluateProperty(propertyObj, extraParams);
+                            break;
+                        case "Constructor":
+                            List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
+
+                            extraParams = InterpretIdentifier(reader, identifier, null);
+
+                            contextEvaluator.EvaluateConstructor(constructorParams, extraParams);
                             break;
                         case "Class":
                             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
@@ -162,6 +161,20 @@ namespace Blueprint.Interpreter
             }
 
             return value;
+        }
+
+        private List<VariableObj> ParseFuncParams(string paramsString)
+        {
+            var funcParams = new List<VariableObj>();
+
+            string[] paramTokens = paramsString.Split(' ');
+            foreach (string paramToken in paramTokens)
+            {
+                string[] tokens = paramToken.Split(':');
+                funcParams.Add(new VariableObj(ParseDataType(tokens[1]), tokens[0]));
+            }
+
+            return funcParams;
         }
 
         public static AccessModifier ParseAccessModifier(string accessModifier)

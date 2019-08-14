@@ -23,6 +23,7 @@ namespace Blueprint.Interpreter
             flags &= EVALUATE_VARIABLE;
             flags &= EVALUATE_PROPERTY;
             flags &= EVALUATE_FUNCTION;
+            flags &= EVALUATE_CONSTRUCTOR;
             flags &= EVALUATE_CLASS;
 
             return flags;
@@ -43,6 +44,12 @@ namespace Blueprint.Interpreter
         public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
             _classBuilder.CreateClassFunction(functionObj,
+                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
+        }
+
+        public override void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
+        {
+            _classBuilder.CreateConstructor(constructorParams,
                 GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 

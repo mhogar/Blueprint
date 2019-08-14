@@ -17,7 +17,7 @@ namespace Blueprint.Logic
         public abstract uint GetSupportedFlags();
         public abstract void CreateClass(string name);
         public abstract void CreateConstructor(
-            List<VariableObj> args, AccessModifier accessModifier = AccessModifier.PUBLIC);
+            List<VariableObj> constructorParams, AccessModifier accessModifier = AccessModifier.PUBLIC);
         public abstract void CreateClassMemeber(
             VariableObj variableObj, AccessModifier accessModifier = AccessModifier.PRIVATE);
         public abstract void CreateClassFunction(

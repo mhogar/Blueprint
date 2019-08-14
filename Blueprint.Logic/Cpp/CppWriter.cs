@@ -119,7 +119,13 @@ namespace Blueprint.Logic
                 namespaceStr = namespaceName + "::";
             }
 
-            return ConvertDataType(variableObj.Type) + " " + namespaceStr + variableObj.Name;
+            string typeString = ConvertDataType(variableObj.Type);
+            if (typeString != "")
+            {
+                typeString += " ";
+            }
+
+            return typeString + namespaceStr + variableObj.Name;
         }
 
         public static string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")

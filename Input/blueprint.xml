@@ -5,6 +5,9 @@
       <Class name="Foo">
         <accessModifier>public</accessModifier>
         <content>
+          <Constructor params="param1:string">
+            <accessModifier>public</accessModifier>
+          </Constructor>
           <Variable name="member" type="int32">
             <accessModifier>private</accessModifier>
           </Variable>

@@ -42,6 +42,11 @@ namespace Blueprint.Interpreter
             _fileBuilder.CreateFileFunction(functionObj);
         }
 
+        public override void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
+        {
+            throw new InvalidOperationException("FileContext does not support EvaluateConstructor.");
+        }
+
         public override void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
             _fileBuilder.CreateFileClass(classBuilder);
