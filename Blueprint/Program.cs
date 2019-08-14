@@ -17,8 +17,20 @@ namespace Blueprint
             string outDir = "C:/Users/mhoga/Documents/Projects/Blueprint/Bin/";
             LangFactoryBase langFactory = new CppFactory();
 
-            var interpreter = new BlueprintInterpreter(langFactory);
-            interpreter.InterpretBlueprint(inFile, outDir);
+            //run the interpreter and catch errors
+            try
+            {
+                var interpreter = new BlueprintInterpreter(langFactory);
+                interpreter.InterpretBlueprint(inFile, outDir);
+            }
+            catch (BlueprintInterpreter.InvalidInterpreterOperationException e)
+            {
+                Console.WriteLine("Invalid Interpreter Operation: " + e.Message);
+            }
+            catch (BlueprintInterpreter.InterpreterParseException e)
+            {
+                Console.WriteLine("Interpreter Parse Error: " + e.Message);
+            }
 
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();

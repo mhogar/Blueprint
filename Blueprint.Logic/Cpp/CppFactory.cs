@@ -11,7 +11,7 @@ namespace Blueprint.Logic.Cpp
         public override uint GetSupportedFlags()
         {
             uint flags = 0;
-            flags &= CLASS_BUILDER;
+            flags |= CLASS_BUILDER;
 
             return flags;
         }

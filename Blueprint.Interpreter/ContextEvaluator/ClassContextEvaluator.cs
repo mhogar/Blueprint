@@ -20,11 +20,11 @@ namespace Blueprint.Interpreter
         public override uint GetSupportedFlags()
         {
             uint flags = 0;
-            flags &= EVALUATE_VARIABLE;
-            flags &= EVALUATE_PROPERTY;
-            flags &= EVALUATE_FUNCTION;
-            flags &= EVALUATE_CONSTRUCTOR;
-            flags &= EVALUATE_CLASS;
+            flags |= EVALUATE_VARIABLE;
+            flags |= EVALUATE_PROPERTY;
+            flags |= EVALUATE_FUNCTION;
+            flags |= EVALUATE_CONSTRUCTOR;
+            flags |= EVALUATE_CLASS;
 
             return flags;
         }

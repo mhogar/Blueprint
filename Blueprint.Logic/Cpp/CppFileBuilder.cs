@@ -18,9 +18,9 @@ namespace Blueprint.Logic.Cpp
         public override uint GetSupportedFlags()
         {
             uint flags = 0;
-            flags &= FILE_VARAIBLE;
-            flags &= FILE_FUNCTION;
-            flags &= FILE_CLASS;
+            flags |= FILE_VARAIBLE;
+            flags |= FILE_FUNCTION;
+            flags |= FILE_CLASS;
 
             return flags;
         }

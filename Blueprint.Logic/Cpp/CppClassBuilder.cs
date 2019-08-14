@@ -8,14 +8,14 @@ namespace Blueprint.Logic
 {
     public class CppClassBuilder : LangClassBuilderBase
     {
-        public override UInt32 GetSupportedFlags()
+        public override uint GetSupportedFlags()
         {
-            UInt32 flags = 0;
-            flags &= CLASS_CONSTRUCTOR;
-            flags &= CLASS_MEMBER;
-            flags &= CLASS_FUNCTION;
-            flags &= CLASS_PROPERTY;
-            flags &= CLASS_SUB_CLASS;
+            uint flags = 0;
+            flags |= CLASS_CONSTRUCTOR;
+            flags |= CLASS_MEMBER;
+            flags |= CLASS_FUNCTION;
+            flags |= CLASS_PROPERTY;
+            flags |= CLASS_SUB_CLASS;
 
             return flags;
         }

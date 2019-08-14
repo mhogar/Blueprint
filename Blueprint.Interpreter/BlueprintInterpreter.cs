@@ -15,6 +15,22 @@ namespace Blueprint.Interpreter
         private LangFactoryBase _langFactory;
         private string _outDir;
 
+        public class InvalidInterpreterOperationException : Exception
+        {
+            public InvalidInterpreterOperationException(string message)
+                : base(message)
+            {
+            }
+        }
+
+        public class InterpreterParseException : Exception
+        {
+            public InterpreterParseException(string message)
+                : base(message)
+            {
+            }
+        }
+
         public BlueprintInterpreter(LangFactoryBase langFactory)
         {
             _langFactory = langFactory;
@@ -70,6 +86,8 @@ namespace Blueprint.Interpreter
                             langWriter.EndWriter();
                             break;
                         case "Variable":
+                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_VARIABLE);
+
                             var variableObj = new VariableObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -80,6 +98,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.EvaluateVariable(variableObj, extraParams);
                             break;
                         case "Function":
+                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_FUNCTION);
+
                             var functionObj = new FunctionObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "returnType", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -91,6 +111,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.EvaluateFunction(functionObj, extraParams);
                             break;
                         case "Property":
+                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_PROPERTY);
+
                             var propertyObj = new VariableObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -101,6 +123,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.EvaluateProperty(propertyObj, extraParams);
                             break;
                         case "Constructor":
+                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_CONSTRUCTOR);
+
                             List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
@@ -108,6 +132,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.EvaluateConstructor(constructorParams, extraParams);
                             break;
                         case "Class":
+                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_CLASS);
+
                             LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
                             classBuilder.CreateClass(GetAttributeOrDefault(reader, "name", ""));
 
@@ -119,8 +145,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.EvaluateClass(classBuilder, extraParams);
                             break;
                         default:
-                            throw new InvalidOperationException(
-                                $"Identifier \"{identifier}\" not valid in context {contextEvaluator.Name}");
+                            throw new InvalidInterpreterOperationException(
+                                $"Identifier \"{identifier}\" not recognized.");
                     }
                 }
             }
@@ -152,6 +178,15 @@ namespace Blueprint.Interpreter
             return extraParams;
         }
 
+        private void ValidateSupported(ContextEvaluatorBase contextEvaluator, string identifier, uint supportedFlag)
+        {
+            if ((contextEvaluator.GetSupportedFlags() & supportedFlag) == 0)
+            {
+                throw new InvalidInterpreterOperationException(
+                    $"Identifier \"{identifier}\" is not supported in context \"{contextEvaluator.Name}\"");
+            }
+        }
+
         private string GetAttributeOrDefault(XmlReader reader, string name, string defaultValue)
         {
             string value = reader.GetAttribute(name);
@@ -163,7 +198,7 @@ namespace Blueprint.Interpreter
             return value;
         }
 
-        private List<VariableObj> ParseFuncParams(string paramsString)
+        public static List<VariableObj> ParseFuncParams(string paramsString)
         {
             var funcParams = new List<VariableObj>();
 
@@ -188,7 +223,7 @@ namespace Blueprint.Interpreter
                 case "private":
                     return AccessModifier.PRIVATE;
                 default:
-                    throw new ArgumentException("Invalid access modifier string: " + accessModifier);
+                    throw new InterpreterParseException($"Invalid access modifier string \"{accessModifier}\"");
             }
         }
 
@@ -227,7 +262,7 @@ namespace Blueprint.Interpreter
                 case "double":
                     return DataType.FLOAT_64;
                 default:
-                    throw new ArgumentException("Invalid data type string: " + dataType);
+                    throw new InterpreterParseException($"Invalid data type string \"{dataType}\"");
             }
         }
     }
