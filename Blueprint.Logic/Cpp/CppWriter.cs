@@ -9,7 +9,7 @@ namespace Blueprint.Logic
 {
     public class CppWriter : LangWriterBase
     {
-        public CppWriter(string filename) : base(filename)
+        public CppWriter()
         {
             _headerStream = null;
             _sourceStream = null;
@@ -47,9 +47,9 @@ namespace Blueprint.Logic
             }
         }
 
-        public override void BeginWriter()
+        public override void BeginWriter(string filename)
         {
-            var headerFilenameInfo = new FilenameInfo(Filename);
+            var headerFilenameInfo = new FilenameInfo(filename);
             headerFilenameInfo.Extname = ".h";
             HeaderStream = new LangStreamWrapper(
                 new StreamWriter(
@@ -57,7 +57,7 @@ namespace Blueprint.Logic
                 )
             );
 
-            var sourceFilenameInfo = new FilenameInfo(Filename);
+            var sourceFilenameInfo = new FilenameInfo(filename);
             sourceFilenameInfo.Extname = ".cpp";
             SourceStream = new LangStreamWrapper(
                new StreamWriter(

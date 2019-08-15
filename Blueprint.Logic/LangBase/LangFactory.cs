@@ -20,8 +20,6 @@ namespace Blueprint.Logic.LangFactory
             get;
             set;
         }
-
-        public abstract LangWriterBase CreateLangWriter(string filename);
     }
 
     public interface ICreateFileBuilder

@@ -67,7 +67,7 @@ namespace Blueprint.Interpreter
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == "Blueprint")
                 {
-                    InterpretContent(reader, null);
+                    InterpretContent(reader, new BlueprintContextEvaluator());
                     break;
                 }
             }
@@ -84,21 +84,15 @@ namespace Blueprint.Interpreter
                     switch (identifier)
                     {
                         case "File":
-                            string filename = GetAttributeOrDefault(reader, "name", "");
                             LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
+                            fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(reader, "name", ""));
 
-                            InterpretIdentifier(reader, identifier, () =>
+                            extraParams = InterpretIdentifier(reader, identifier, () =>
                             {
                                 return new FileContextEvaluator(fileBuilder);
                             });
 
-                            //write the file
-                            LangWriterBase langWriter = _langFactory.CreateLangWriter(_outDir + filename);
-                            langWriter.BeginWriter();
-                            {
-                                fileBuilder.WriteFile(langWriter);
-                            }
-                            langWriter.EndWriter();
+                            contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
                             break;
                         case "Variable":
                             var variableObj = new VariableObj(

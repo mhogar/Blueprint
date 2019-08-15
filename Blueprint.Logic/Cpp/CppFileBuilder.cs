@@ -8,14 +8,19 @@ using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.Cpp
 {
-    public class CppFileBuilder : LangFileBuilderBase, 
-        ICreateFileVariable, ICreateFileFunction, ICreateFileClass
+    public class CppFileBuilder : LangFileBuilderBase, ICreateFileVariable, ICreateFileFunction, ICreateFileClass
     {
+        private string _filename;
         private List<CppClassBuilder> _classes;
 
         public CppFileBuilder()
         {
             _classes = new List<CppClassBuilder>();
+        }
+
+        public override void CreateFile(string filename)
+        {
+            _filename = filename;
         }
 
         public void CreateFileVariable(VariableObj variableObj)
@@ -35,27 +40,26 @@ namespace Blueprint.Logic.Cpp
             _classes.Add(cppClassBuilder);
         }
 
-        public override void WriteFile(LangWriterBase langWriter)
+        public override void WriteFile()
         {
-            var cppWriter = langWriter as CppWriter;
-            if (cppWriter == null)
+            var cppWriter = new CppWriter();
+            cppWriter.BeginWriter(_filename);
             {
-                throw new ArgumentException("LangWriterBase was not a CppWriter.");
+                //write the beginning of the files
+                cppWriter.HeaderStream.WriteLine("#pragma once");
+                cppWriter.SourceStream.WriteLine($"#include \"{new FilenameInfo(_filename).Basename}.h\"");
+
+                //write any classes
+                foreach (CppClassBuilder classBuilder in _classes)
+                {
+                    cppWriter.HeaderStream.NewLine();
+                    classBuilder.WriteClass(cppWriter);
+                }
+
+                WriterHeaderFile(cppWriter.HeaderStream);
+                WriteSourceFile(cppWriter.SourceStream);
             }
-
-            //write the beginning of the files
-            cppWriter.HeaderStream.WriteLine("#pragma once");
-            cppWriter.SourceStream.WriteLine($"#include \"{new FilenameInfo(langWriter.Filename).Basename}.h\"");
-
-            //write any classes
-            foreach (CppClassBuilder classBuilder in _classes)
-            {
-                cppWriter.HeaderStream.NewLine();
-                classBuilder.WriteClass(cppWriter);
-            }
-
-            WriterHeaderFile(cppWriter.HeaderStream);
-            WriteSourceFile(cppWriter.SourceStream);
+            cppWriter.EndWriter();
         }
 
         private void WriterHeaderFile(LangStreamWrapper stream)

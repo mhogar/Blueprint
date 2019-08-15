@@ -9,7 +9,8 @@ namespace Blueprint.Logic.LangFileBuilder
 {
     public abstract class LangFileBuilderBase : Foo
     {
-        public abstract void WriteFile(LangWriterBase langWriter);
+        public abstract void CreateFile(string filename);
+        public abstract void WriteFile();
     }
 
     public interface ICreateFileVariable

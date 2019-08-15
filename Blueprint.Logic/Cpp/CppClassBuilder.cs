@@ -116,11 +116,7 @@ namespace Blueprint.Logic
 
         public override void WriteClass(LangWriterBase langWriter)
         {
-            var cppWriter = langWriter as CppWriter;
-            if (cppWriter == null)
-            {
-                throw new ArgumentException("LangWriterBase was not a CppWriter.");
-            }
+            var cppWriter = langWriter.TryCast<CppWriter>();
 
             WriterHeaderFile(cppWriter.HeaderStream);
             WriteSourceFile(cppWriter.SourceStream);

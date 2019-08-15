@@ -15,11 +15,6 @@ namespace Blueprint.Logic.Cpp
         {
         }
 
-        public override LangWriterBase CreateLangWriter(string filename)
-        {
-            return new CppWriter(filename);
-        }
-
         public LangFileBuilderBase CreateFileBuilder()
         {
             return new CppFileBuilder();
