@@ -4,71 +4,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blueprint.Logic;
+using Blueprint.Logic.LangClassBuilder;
 
-namespace Blueprint.Interpreter
+namespace Blueprint.Interpreter.ContextEvaluator
 {
-    public class ClassContextEvaluator : ContextEvaluatorBase
+    public class ClassContextEvaluator : ContextEvaluatorBase, 
+        IEvaluateVariable, IEvaluateProperty, IEvaluateFunction, IEvaluateConstructor, IEvaluateClass
     {
         private LangClassBuilderBase _classBuilder;
 
-        public ClassContextEvaluator(LangClassBuilderBase classBuilder)
-            : base("Class")
+        public ClassContextEvaluator(LangClassBuilderBase classBuilder) : base("Class")
         {
             _classBuilder = classBuilder;
         }
 
-        public override uint GetSupportedFlags()
+        public void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            uint flags = 0;
-            flags |= EVALUATE_VARIABLE;
-            flags |= EVALUATE_PROPERTY;
-            flags |= EVALUATE_FUNCTION;
-            flags |= EVALUATE_CONSTRUCTOR;
-            flags |= EVALUATE_CLASS;
-
-            return flags;
+            _classBuilder.TryCast<ICreateClassMemeber>().CreateClassMemeber(
+                variableObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
-        public override void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
+        public void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassMemeber(variableObj, 
-                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
+            _classBuilder.TryCast<ICreateClassProperty>().CreateClassProperty(
+                variableObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
-        public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
+        public void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassProperty(variableObj,
-                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
+            _classBuilder.TryCast<ICreateClassFunction>().CreateClassFunction(
+                functionObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
-        public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
+        public void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateClassFunction(functionObj,
-                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
+            _classBuilder.TryCast<ICreateClassConstructor>().CreateClassConstructor(
+                constructorParams, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
-        public override void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
+        public void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
-            _classBuilder.CreateConstructor(constructorParams,
-                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
-        }
-
-        public override void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
-        {
-            _classBuilder.CreateInnerClass(classBuilder,
-                GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
-        }
-
-        private AccessModifier GetAccessModifierFromExtraParams(
-            Dictionary<string, string> extraParams, AccessModifier defaultValue)
-        {
-            string accessModifierStr;
-            if (!extraParams.TryGetValue("accessModifier", out accessModifierStr))
-            {
-                return defaultValue;
-            }
-
-            return BlueprintInterpreter.ParseAccessModifier(accessModifierStr);
+            _classBuilder.TryCast<ICreateInnerClass>().CreateInnerClass(
+                classBuilder, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
     }
 }

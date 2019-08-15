@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.Cpp
 {
-    public class CppFileBuilder : LangFileBuilderBase
+    public class CppFileBuilder : LangFileBuilderBase, 
+        ICreateFileVariable, ICreateFileFunction, ICreateFileClass
     {
         private List<CppClassBuilder> _classes;
 
@@ -15,33 +18,19 @@ namespace Blueprint.Logic.Cpp
             _classes = new List<CppClassBuilder>();
         }
 
-        public override uint GetSupportedFlags()
-        {
-            uint flags = 0;
-            flags |= FILE_VARAIBLE;
-            flags |= FILE_FUNCTION;
-            flags |= FILE_CLASS;
-
-            return flags;
-        }
-
-        public override void CreateFileVariable(VariableObj variableObj)
+        public void CreateFileVariable(VariableObj variableObj)
         {
             throw new NotImplementedException();
         }
 
-        public override void CreateFileFunction(FunctionObj functionObj)
+        public void CreateFileFunction(FunctionObj functionObj)
         {
             throw new NotImplementedException();
         }
 
-        public override void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
+        public void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
-            var cppClassBuilder = classBuilder as CppClassBuilder;
-            if (cppClassBuilder == null)
-            {
-                throw new ArgumentException("LangClassBuilderBase was not a CppClassBuilder.");
-            }
+            CppClassBuilder cppClassBuilder = classBuilder.TryCast<CppClassBuilder>();
 
             _classes.Add(cppClassBuilder);
         }

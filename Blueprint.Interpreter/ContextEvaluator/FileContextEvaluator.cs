@@ -4,52 +4,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Logic.LangClassBuilder;
+using Blueprint.Interpreter;
 
-namespace Blueprint.Interpreter
+namespace Blueprint.Interpreter.ContextEvaluator
 {
-    public class FileContextEvaluator : ContextEvaluatorBase
+    public class FileContextEvaluator : ContextEvaluatorBase, IEvaluateVariable, IEvaluateFunction, IEvaluateClass
     {
         private LangFileBuilderBase _fileBuilder;
 
-        public FileContextEvaluator(LangFileBuilderBase fileBuilder)
-            : base("File")
+        public FileContextEvaluator(LangFileBuilderBase fileBuilder) : base("File")
         {
             _fileBuilder = fileBuilder;
         }
 
-        public override uint GetSupportedFlags()
+        public void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            uint flags = 0;
-            flags |= EVALUATE_VARIABLE;
-            flags |= EVALUATE_FUNCTION;
-            flags |= EVALUATE_CLASS;
-
-            return flags;
+            _fileBuilder.TryCast<ICreateFileVariable>().CreateFileVariable(variableObj);
         }
 
-        public override void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
+        public void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
-            _fileBuilder.CreateFileVariable(variableObj);
+            _fileBuilder.TryCast<ICreateFileFunction>().CreateFileFunction(functionObj);
         }
 
-        public override void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
+        public void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
-            throw new InvalidOperationException("FileContext does not support EvaluateProperty.");
-        }
-
-        public override void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
-        {
-            _fileBuilder.CreateFileFunction(functionObj);
-        }
-
-        public override void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
-        {
-            throw new InvalidOperationException("FileContext does not support EvaluateConstructor.");
-        }
-
-        public override void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
-        {
-            _fileBuilder.CreateFileClass(classBuilder);
+            _fileBuilder.TryCast<ICreateFileClass>().CreateFileClass(
+                classBuilder, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
     }
 }

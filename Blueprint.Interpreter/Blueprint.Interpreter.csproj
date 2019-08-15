@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextEvaluator\ClassContextEvaluator.cs" />
-    <Compile Include="ContextEvaluator\ContextEvaluatorBase.cs" />
+    <Compile Include="ContextEvaluator\ContextEvaluator.cs" />
     <Compile Include="ContextEvaluator\FileContextEvaluator.cs" />
     <Compile Include="BlueprintInterpreter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

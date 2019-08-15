@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Logic.LangClassBuilder;
+
+namespace Blueprint.Logic.LangFactory
+{
+    public abstract class LangFactoryBase : Foo
+    {
+        public LangFactoryBase(string name)
+        {
+            Name = name;
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public abstract LangWriterBase CreateLangWriter(string filename);
+    }
+
+    public interface ICreateFileBuilder
+    {
+        LangFileBuilderBase CreateFileBuilder();
+    }
+
+    public interface ICreateClassBuilder
+    {
+        LangClassBuilderBase CreateClassBuilder();
+    }
+}

@@ -1,5 +1,8 @@
 ﻿using Blueprint.Logic;
-using Blueprint.Logic.Cpp;
+using Blueprint.Logic.LangFactory;
+using Blueprint.Logic.LangClassBuilder;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Interpreter.ContextEvaluator;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,8 +42,20 @@ namespace Blueprint.Interpreter
         public void InterpretBlueprint(string filename, string outDir)
         {
             var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            InterpretBlueprint(stream, outDir);
-            stream.Close();
+
+            try
+            {
+                InterpretBlueprint(stream, outDir);
+            }
+            catch (InvalidOperationException e)
+            {
+                //re-throw InvalidOperationExceptions as InvalidInterpreterOperationExceptions
+                throw new InvalidInterpreterOperationException(e.Message);
+            }
+            finally
+            {
+                stream.Close();
+            }
         }
 
         public void InterpretBlueprint(Stream stream, string outDir)
@@ -70,7 +85,7 @@ namespace Blueprint.Interpreter
                     {
                         case "File":
                             string filename = GetAttributeOrDefault(reader, "name", "");
-                            LangFileBuilderBase fileBuilder = _langFactory.CreateFileBuilder();
+                            LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
 
                             InterpretIdentifier(reader, identifier, () =>
                             {
@@ -86,8 +101,6 @@ namespace Blueprint.Interpreter
                             langWriter.EndWriter();
                             break;
                         case "Variable":
-                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_VARIABLE);
-
                             var variableObj = new VariableObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -95,11 +108,9 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
-                            contextEvaluator.EvaluateVariable(variableObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
                             break;
                         case "Function":
-                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_FUNCTION);
-
                             var functionObj = new FunctionObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "returnType", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -108,11 +119,9 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
-                            contextEvaluator.EvaluateFunction(functionObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
                             break;
                         case "Property":
-                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_PROPERTY);
-
                             var propertyObj = new VariableObj(
                                 ParseDataType(GetAttributeOrDefault(reader, "type", "")),
                                 GetAttributeOrDefault(reader, "name", "")
@@ -120,21 +129,19 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
-                            contextEvaluator.EvaluateProperty(propertyObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
                             break;
                         case "Constructor":
-                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_CONSTRUCTOR);
-
                             List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
 
                             extraParams = InterpretIdentifier(reader, identifier, null);
 
-                            contextEvaluator.EvaluateConstructor(constructorParams, extraParams);
+                            contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
                             break;
                         case "Class":
-                            ValidateSupported(contextEvaluator, identifier, ContextEvaluatorBase.EVALUATE_CLASS);
+                            LangClassBuilderBase classBuilder = 
+                                _langFactory.TryCast<ICreateClassBuilder>().CreateClassBuilder();
 
-                            LangClassBuilderBase classBuilder = _langFactory.CreateClassBuilder();
                             classBuilder.CreateClass(GetAttributeOrDefault(reader, "name", ""));
 
                             extraParams = InterpretIdentifier(reader, identifier, () =>
@@ -142,7 +149,7 @@ namespace Blueprint.Interpreter
                                 return new ClassContextEvaluator(classBuilder);
                             });
 
-                            contextEvaluator.EvaluateClass(classBuilder, extraParams);
+                            contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
                             break;
                         default:
                             throw new InvalidInterpreterOperationException(
@@ -176,15 +183,6 @@ namespace Blueprint.Interpreter
             }
 
             return extraParams;
-        }
-
-        private void ValidateSupported(ContextEvaluatorBase contextEvaluator, string identifier, uint supportedFlag)
-        {
-            if ((contextEvaluator.GetSupportedFlags() & supportedFlag) == 0)
-            {
-                throw new InvalidInterpreterOperationException(
-                    $"Identifier \"{identifier}\" is not supported in context \"{contextEvaluator.Name}\"");
-            }
         }
 
         private string GetAttributeOrDefault(XmlReader reader, string name, string defaultValue)
