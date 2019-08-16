@@ -32,6 +32,10 @@ namespace Blueprint
             {
                 Console.WriteLine("Interpreter Parse Error: " + e.Message);
             }
+            catch (BlueprintInterpreter.BlueprintSchemaValidationException e)
+            {
+                Console.WriteLine("Blueprint Schema Validation Error: " + e.Message);
+            }
 
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();

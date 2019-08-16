@@ -54,5 +54,10 @@
       <Name>Blueprint.Logic</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="BlueprintXMLSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

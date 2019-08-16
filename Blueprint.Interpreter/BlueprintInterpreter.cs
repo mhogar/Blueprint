@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace Blueprint.Interpreter
 {
@@ -30,6 +31,14 @@ namespace Blueprint.Interpreter
         {
             public InterpreterParseException(string message)
                 : base(message)
+            {
+            }
+        }
+
+        public class BlueprintSchemaValidationException : Exception
+        {
+            public BlueprintSchemaValidationException(ValidationEventArgs args)
+                : base(args.Message, args.Exception)
             {
             }
         }
@@ -66,6 +75,20 @@ namespace Blueprint.Interpreter
             {
                 var doc = new XmlDocument();
                 doc.Load(stream);
+
+                doc.Schemas.Add(null, 
+                    "C:/Users/mhoga/Documents/Projects/Blueprint/Blueprint.Interpreter/BlueprintXMLSchema.xsd");
+                doc.Validate(new ValidationEventHandler((object sender, ValidationEventArgs args) =>
+                {
+                    if (args.Severity == XmlSeverityType.Error)
+                    {
+                        throw new BlueprintSchemaValidationException(args);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Blueprint Validation Warning: " + args.Message);
+                    }
+                }));
 
                 foreach (XmlNode node in doc.ChildNodes)
                 {
