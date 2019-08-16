@@ -61,133 +61,133 @@ namespace Blueprint.Interpreter
         public void InterpretBlueprint(Stream stream, string outDir)
         {
             _outDir = outDir;
-            XmlReader reader = XmlReader.Create(stream);
 
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "Blueprint")
+                var doc = new XmlDocument();
+                doc.Load(stream);
+
+                foreach (XmlNode node in doc.ChildNodes)
                 {
-                    InterpretContent(reader, new BlueprintContextEvaluator());
-                    break;
+                    if (node.Name == "Blueprint")
+                    {
+                        InterpretContent(node, new BlueprintContextEvaluator());
+                        break;
+                    }
                 }
+            }
+            catch (XmlException e)
+            {
+                throw new InterpreterParseException(e.Message);
             }
         }
 
-        private void InterpretContent(XmlReader reader, ContextEvaluatorBase contextEvaluator)
+        private void InterpretContent(XmlNode contentNode, ContextEvaluatorBase contextEvaluator)
         {
-            while (reader.Read())
+            foreach (XmlNode node in contentNode.ChildNodes)
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                string identifier = node.Name;
+                Dictionary<string, string> extraParams;
+                switch (identifier)
                 {
-                    string identifier = reader.Name;
-                    Dictionary<string, string> extraParams;
-                    switch (identifier)
-                    {
-                        case "File":
-                            LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
-                            fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(reader, "name", ""));
+                    case "File":
+                        LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
+                        fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(node, "name", ""));
 
-                            extraParams = InterpretIdentifier(reader, identifier, () =>
-                            {
-                                return new FileContextEvaluator(fileBuilder);
-                            });
+                        extraParams = InterpretIdentifier(node, () =>
+                        {
+                            return new FileContextEvaluator(fileBuilder);
+                        });
 
-                            contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
-                            break;
-                        case "Variable":
-                            var variableObj = new VariableObj(
-                                ParseDataType(GetAttributeOrDefault(reader, "type", "")),
-                                GetAttributeOrDefault(reader, "name", "")
-                            );
+                        contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
+                        break;
+                    case "Variable":
+                        var variableObj = new VariableObj(
+                            ParseDataType(GetAttributeOrDefault(node, "type", "")),
+                            GetAttributeOrDefault(node, "name", "")
+                        );
 
-                            extraParams = InterpretIdentifier(reader, identifier, null);
+                        extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
-                            break;
-                        case "Function":
-                            var functionObj = new FunctionObj(
-                                ParseDataType(GetAttributeOrDefault(reader, "returnType", "")),
-                                GetAttributeOrDefault(reader, "name", "")
-                            );
-                            functionObj.FuncParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
+                        contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
+                        break;
+                    case "Function":
+                        var functionObj = new FunctionObj(
+                            ParseDataType(GetAttributeOrDefault(node, "returnType", "")),
+                            GetAttributeOrDefault(node, "name", "")
+                        );
+                        functionObj.FuncParams = ParseFuncParams(GetAttributeOrDefault(node, "params", ""));
 
-                            extraParams = InterpretIdentifier(reader, identifier, null);
+                        extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
-                            break;
-                        case "Property":
-                            var propertyObj = new VariableObj(
-                                ParseDataType(GetAttributeOrDefault(reader, "type", "")),
-                                GetAttributeOrDefault(reader, "name", "")
-                            );
+                        contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
+                        break;
+                    case "Property":
+                        var propertyObj = new VariableObj(
+                            ParseDataType(GetAttributeOrDefault(node, "type", "")),
+                            GetAttributeOrDefault(node, "name", "")
+                        );
 
-                            extraParams = InterpretIdentifier(reader, identifier, null);
+                        extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
-                            break;
-                        case "Constructor":
-                            List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(reader, "params", ""));
+                        contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
+                        break;
+                    case "Constructor":
+                        List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(node, "params", ""));
 
-                            extraParams = InterpretIdentifier(reader, identifier, null);
+                        extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
-                            break;
-                        case "Class":
-                            LangClassBuilderBase classBuilder = 
-                                _langFactory.TryCast<ICreateClassBuilder>().CreateClassBuilder();
+                        contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
+                        break;
+                    case "Class":
+                        LangClassBuilderBase classBuilder = 
+                            _langFactory.TryCast<ICreateClassBuilder>().CreateClassBuilder();
 
-                            classBuilder.CreateClass(GetAttributeOrDefault(reader, "name", ""));
+                        classBuilder.CreateClass(GetAttributeOrDefault(node, "name", ""));
 
-                            extraParams = InterpretIdentifier(reader, identifier, () =>
-                            {
-                                return new ClassContextEvaluator(classBuilder);
-                            });
+                        extraParams = InterpretIdentifier(node, () =>
+                        {
+                            return new ClassContextEvaluator(classBuilder);
+                        });
 
-                            contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
-                            break;
-                        default:
-                            throw new InvalidInterpreterOperationException(
-                                $"Identifier \"{identifier}\" not recognized.");
-                    }
+                        contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
+                        break;
+                    default:
+                        throw new InvalidInterpreterOperationException(
+                            $"Identifier \"{identifier}\" not recognized.");
                 }
             }
         }
 
         private Dictionary<string, string> InterpretIdentifier(
-            XmlReader reader, string identifier, Func<ContextEvaluatorBase> createContextEvaluatorDelegate)
+            XmlNode identifierNode, Func<ContextEvaluatorBase> createContextEvaluatorDelegate)
         {
             var extraParams = new Dictionary<string, string>();
 
-            while(reader.Read()
-                && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == identifier))
+            foreach (XmlNode node in identifierNode.ChildNodes)
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                if (node.Name == "content")
                 {
-                    string tagName = reader.Name;
-                    if (tagName == "content")
-                    {
-                        InterpretContent(reader, createContextEvaluatorDelegate());
-                    }
-                    else
-                    {
-                        reader.Read();
-                        extraParams.Add(tagName, reader.Value);
-                    }
+                    InterpretContent(node, createContextEvaluatorDelegate());
+                }
+                else
+                {
+                    extraParams.Add(node.Name, node.InnerText);
                 }
             }
 
             return extraParams;
         }
 
-        private string GetAttributeOrDefault(XmlReader reader, string name, string defaultValue)
+        private string GetAttributeOrDefault(XmlNode node, string name, string defaultValue)
         {
-            string value = reader.GetAttribute(name);
-            if (value == null)
+            XmlAttribute attribute = node.Attributes[name];
+            if (attribute == null)
             {
                 return defaultValue;
             }
 
-            return value;
+            return attribute.Value;
         }
 
         public static List<VariableObj> ParseFuncParams(string paramsString)
