@@ -4,84 +4,84 @@
 >
   <xs:element name="Blueprint">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="File" maxOccurs="unbounded">
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="File">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="content" minOccurs="0">
+            <xs:all minOccurs="0">
+              <xs:element name="content">
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Variable" minOccurs="0" maxOccurs="unbounded">
+                  <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="Variable">
                       <xs:complexType>
                         <xs:attribute name="name" type="xs:string" use="required" />
                         <xs:attribute name="type" type="xs:string" use="required" />
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="Function" minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="Function">
                       <xs:complexType>
                         <xs:attribute name="name" type="xs:string" use="required" />
                         <xs:attribute name="returnType" type="xs:string" use="required" />
                         <xs:attribute name="params" type="xs:string" />
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="Class" minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="Class">
                       <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
-                          <xs:element name="content" minOccurs="0">
+                        <xs:all minOccurs="0">
+                          <xs:element name="accessModifier" type="xs:string" />
+                          <xs:element name="content">
                             <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="Constructor" minOccurs="0" maxOccurs="unbounded">
+                              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="Constructor">
                                   <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
-                                    </xs:sequence>
+                                    <xs:all minOccurs="0">
+                                      <xs:element name="accessModifier" type="xs:string" />
+                                    </xs:all>
                                     <xs:attribute name="params" type="xs:string" />
                                   </xs:complexType>
                                 </xs:element>
-                                <xs:element name="Variable" minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="Variable">
                                   <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
-                                    </xs:sequence>
+                                    <xs:all minOccurs="0">
+                                      <xs:element name="accessModifier" type="xs:string" />
+                                    </xs:all>
                                     <xs:attribute name="name" type="xs:string" use="required" />
                                     <xs:attribute name="type" type="xs:string" use="required" />
                                   </xs:complexType>
                                 </xs:element>
                                 <xs:element name="Function" minOccurs="0" maxOccurs="unbounded">
                                   <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
-                                    </xs:sequence>
+                                    <xs:all minOccurs="0">
+                                      <xs:element name="accessModifier" type="xs:string" />
+                                    </xs:all>
                                     <xs:attribute name="name" type="xs:string" use="required" />
                                     <xs:attribute name="returnType" type="xs:string" use="required" />
                                     <xs:attribute name="params" type="xs:string" />
                                   </xs:complexType>
                                 </xs:element>
-                                <xs:element name="Property" minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="Property">
                                   <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
-                                    </xs:sequence>
+                                    <xs:all minOccurs="0">
+                                      <xs:element name="accessModifier" type="xs:string" />
+                                    </xs:all>
                                     <xs:attribute name="name" type="xs:string" use="required" />
                                     <xs:attribute name="type" type="xs:string" use="required" />
                                   </xs:complexType>
                                 </xs:element>
-                              </xs:sequence>
+                              </xs:choice>
                             </xs:complexType>
                           </xs:element>
-                        </xs:sequence>
+                        </xs:all>
                         <xs:attribute name="name" type="xs:string" use="required" />
                       </xs:complexType>
                     </xs:element>
-                  </xs:sequence>
+                  </xs:choice>
                 </xs:complexType>
               </xs:element>
-            </xs:sequence>
+            </xs:all>
             <xs:attribute name="name" type="xs:string" use="required" />
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 </xs:schema>
