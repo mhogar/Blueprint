@@ -8,22 +8,22 @@
         <xs:element name="File" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Variable" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="type" type="xs:string" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Function" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="returnType" type="xs:string" use="required" />
-                  <xs:attribute name="params" type="xs:string" />
-                </xs:complexType>
-              </xs:element>
               <xs:element name="content" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
+                    <xs:element name="Variable" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Function" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="returnType" type="xs:string" use="required" />
+                        <xs:attribute name="params" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
                     <xs:element name="Class" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:sequence>
