@@ -1,27 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Blueprint>
-  <File name="Foo">
-    <content>
-      <Variable name="fileVar" type="string" />
-      <Function name="FileFunction" returnType="void" params="param1:string" />
-      <Class name="Foo">
-        
-        <content>
-          <Constructor params="param1:string">
+  <Files>
+    <File name="Foo">
+      <content>
+        <Variables>
+          <Variable name="fileVar" type="string" />
+        </Variables>
+        <Functions>
+          <Function name="FileFunction" returnType="void" params="param1:string" />
+        </Functions>
+        <Classes>
+          <Class name="Foo">
             <accessModifier>public</accessModifier>
-          </Constructor>
-          <Variable name="member" type="string">
-            <accessModifier>public</accessModifier>
-          </Variable>
-          <Function name="ClassFunction" returnType="void" params="param1:string">
-            <accessModifier>public</accessModifier>
-          </Function>
-          <Property name="property" type="string">
-            <accessModifier>public</accessModifier>
-          </Property>
-        </content>
-        <accessModifier>public</accessModifier>
-      </Class>
-    </content>
-  </File>
+            <content>
+              <Constructor params="param1:string">
+                <accessModifier>public</accessModifier>
+              </Constructor>
+              <Variables>
+                <Variable name="member" type="string">
+                  <accessModifier>public</accessModifier>
+                </Variable>
+              </Variables>
+              <Functions>
+                <Function name="ClassFunction" returnType="void" params="param1:string">
+                  <accessModifier>public</accessModifier>
+                </Function>
+              </Functions>
+              <Properties>
+                <Property name="property" type="string">
+                  <accessModifier>public</accessModifier>
+                </Property>
+              </Properties>
+            </content>
+          </Class>
+        </Classes>
+      </content>
+    </File>
+  </Files>
 </Blueprint>
