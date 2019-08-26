@@ -3,6 +3,13 @@
   <Files>
     <File name="Foo">
       <content>
+        <Variables>
+          <Variable name="fileVar" type="int32" />
+          <Variable name="anotherFileVar" type="int8" />
+        </Variables>
+        <Functions>
+          <Function name="fileFunc" returnType="float32" />
+        </Functions>
         <Classes>
           <Class name="Foo">
             <accessModifier>public</accessModifier>

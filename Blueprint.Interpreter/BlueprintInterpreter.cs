@@ -230,6 +230,10 @@ namespace Blueprint.Interpreter
         public static List<VariableObj> ParseFuncParams(string paramsString)
         {
             var funcParams = new List<VariableObj>();
+            if (paramsString == "")
+            {
+                return funcParams;
+            }
 
             string[] paramTokens = paramsString.Split(' ');
             foreach (string paramToken in paramTokens)
@@ -286,9 +290,9 @@ namespace Blueprint.Interpreter
                     return DataType.UINT_32;
                 case "uint64":
                     return DataType.UINT_64;
-                case "float":
+                case "float32":
                     return DataType.FLOAT_32;
-                case "double":
+                case "float64":
                     return DataType.FLOAT_64;
                 default:
                     throw new InterpreterParseException($"Invalid data type string \"{dataType}\"");

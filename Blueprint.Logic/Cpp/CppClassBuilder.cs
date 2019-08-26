@@ -77,7 +77,7 @@ namespace Blueprint.Logic
 
             var getFunc = new FunctionObj(variableObj.Type, "get_" + variableObj.Name, (stream) =>
             {
-                stream.WriteLine("return this->" + variableObj.Name);
+                stream.WriteLine("return this->" + variableObj.Name + ";");
             });
             CreateClassFunction(getFunc, AccessModifier.PUBLIC, false);
 

@@ -11,10 +11,14 @@ namespace Blueprint.Logic.Cpp
     public class CppFileBuilder : LangFileBuilderBase, ICreateFileVariable, ICreateFileFunction, ICreateFileClass
     {
         private string _filename;
+        private List<VariableObj> _variables;
+        private List<FunctionObj> _functions;
         private List<CppClassBuilder> _classes;
 
         public CppFileBuilder()
         {
+            _variables = new List<VariableObj>();
+            _functions = new List<FunctionObj>();
             _classes = new List<CppClassBuilder>();
         }
 
@@ -25,12 +29,12 @@ namespace Blueprint.Logic.Cpp
 
         public void CreateFileVariable(VariableObj variableObj)
         {
-            throw new NotImplementedException();
+            _variables.Add(variableObj);
         }
 
         public void CreateFileFunction(FunctionObj functionObj)
         {
-            throw new NotImplementedException();
+            _functions.Add(functionObj);
         }
 
         public void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
@@ -49,25 +53,43 @@ namespace Blueprint.Logic.Cpp
                 cppWriter.HeaderStream.WriteLine("#pragma once");
                 cppWriter.SourceStream.WriteLine($"#include \"{new FilenameInfo(_filename).Basename}.h\"");
 
+                WriterHeaderFile(cppWriter.HeaderStream);
+                WriteSourceFile(cppWriter.SourceStream);
+
                 //write any classes
                 foreach (CppClassBuilder classBuilder in _classes)
                 {
                     cppWriter.HeaderStream.NewLine();
                     classBuilder.WriteClass(cppWriter);
                 }
-
-                WriterHeaderFile(cppWriter.HeaderStream);
-                WriteSourceFile(cppWriter.SourceStream);
             }
             cppWriter.EndWriter();
         }
 
         private void WriterHeaderFile(LangStreamWrapper stream)
         {
+            stream.NewLine();
+            foreach (VariableObj variableObj in _variables)
+            {
+                stream.WriteLine(CppWriter.CreateVariableString(variableObj) + ";");
+            }
+
+            stream.NewLine();
+            foreach (FunctionObj functionObj in _functions)
+            {
+                stream.WriteLine(CppWriter.CreateFunctionString(functionObj) + ";");
+            }
         }
 
         private void WriteSourceFile(LangStreamWrapper stream)
         {
+            foreach (FunctionObj functionObj in _functions)
+            {
+                stream.NewLine();
+                stream.WriteLine(CppWriter.CreateFunctionString(functionObj));
+                stream.WriteLine("{");
+                stream.WriteLine("}");
+            }
         }
     }
 }
