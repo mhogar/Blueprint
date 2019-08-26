@@ -7,7 +7,7 @@ using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.LangFileBuilder
 {
-    public abstract class LangFileBuilderBase : Foo
+    public abstract class LangFileBuilderBase : TryCastBase
     {
         public abstract void CreateFile(string filename);
         public abstract void WriteFile();

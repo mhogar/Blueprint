@@ -24,10 +24,6 @@ namespace Blueprint
                 var interpreter = new BlueprintInterpreter(langFactory);
                 interpreter.InterpretBlueprint(inFile, outDir);
             }
-            catch (BlueprintInterpreter.InvalidInterpreterOperationException e)
-            {
-                Console.WriteLine("Invalid Interpreter Operation: " + e.Message);
-            }
             catch (BlueprintInterpreter.InterpreterParseException e)
             {
                 Console.WriteLine("Interpreter Parse Error: " + e.Message);

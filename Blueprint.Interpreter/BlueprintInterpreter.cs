@@ -19,18 +19,15 @@ namespace Blueprint.Interpreter
         private LangFactoryBase _langFactory;
         private string _outDir;
 
-        public class InvalidInterpreterOperationException : Exception
-        {
-            public InvalidInterpreterOperationException(string message)
-                : base(message)
-            {
-            }
-        }
-
         public class InterpreterParseException : Exception
         {
             public InterpreterParseException(string message)
                 : base(message)
+            {
+            }
+
+            public InterpreterParseException(string message, Exception innerException)
+                : base(message, innerException)
             {
             }
         }
@@ -52,19 +49,8 @@ namespace Blueprint.Interpreter
         {
             var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
-            try
-            {
-                InterpretBlueprint(stream, outDir);
-            }
-            catch (InvalidOperationException e)
-            {
-                //re-throw InvalidOperationExceptions as InvalidInterpreterOperationExceptions
-                throw new InvalidInterpreterOperationException(e.Message);
-            }
-            finally
-            {
-                stream.Close();
-            }
+            InterpretBlueprint(stream, outDir);
+            stream.Close();
         }
 
         public void InterpretBlueprint(Stream stream, string outDir)
@@ -190,8 +176,9 @@ namespace Blueprint.Interpreter
                         }
                         break;
                     default:
-                        throw new InvalidInterpreterOperationException(
-                            $"Identifier \"{parentNode.Name}\" not recognized.");
+                        /* Note: this should be impossible since an invalid identifier would be caught by the 
+                         * schema validation, but we should still throw an exception just in case */
+                        throw new InterpreterParseException($"Identifier \"{parentNode.Name}\" not recognized.");
                 }
             }
         }
@@ -239,6 +226,11 @@ namespace Blueprint.Interpreter
             foreach (string paramToken in paramTokens)
             {
                 string[] tokens = paramToken.Split(':');
+                if (tokens.Length != 2)
+                {
+                    throw new InterpreterParseException($"Invalid function param string \"{paramToken}\"");
+                }
+
                 funcParams.Add(new VariableObj(ParseDataType(tokens[1]), tokens[0]));
             }
 
