@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Blueprint>
-  <File name="Foo">
-    <content>
-      <Class name="Foo">
-        <accessModifier>public</accessModifier>
-        <content>
-          <Constructor params="param1:string">
+  <Files>
+    <File name="Foo">
+      <content>
+        <Classes>
+          <Class name="Foo">
             <accessModifier>public</accessModifier>
-          </Constructor>
-          <Variable name="member" type="int32">
-            <accessModifier>private</accessModifier>
-          </Variable>
-          <Function name="ClassFunction" returnType="void" params="param1:int32 param2:boolean">
-            <accessModifier>public</accessModifier>
-          </Function>
-          <Property name="property" type="uint16">
-            <accessModifier>protected</accessModifier>
-          </Property>
-        </content>
-      </Class>
-    </content>
-  </File>
+            <content>
+              <Constructor params="param1:string">
+                <accessModifier>public</accessModifier>
+              </Constructor>
+              <Variables>
+                <Variable name="member" type="int32">
+                  <accessModifier>private</accessModifier>
+                </Variable>
+              </Variables>
+              <Functions>
+                <Function name="ClassFunction" returnType="void" params="param1:int32 param2:boolean">
+                  <accessModifier>public</accessModifier>
+                </Function>
+              </Functions>
+              <Properties>
+                <Property name="property" type="uint16">
+                  <accessModifier>protected</accessModifier>
+                </Property>
+              </Properties>
+            </content>
+          </Class>
+        </Classes>
+      </content>
+    </File>
+  </Files>
 </Blueprint>

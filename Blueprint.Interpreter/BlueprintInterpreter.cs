@@ -107,77 +107,91 @@ namespace Blueprint.Interpreter
 
         private void InterpretContent(XmlNode contentNode, ContextEvaluatorBase contextEvaluator)
         {
-            foreach (XmlNode node in contentNode.ChildNodes)
+            foreach (XmlNode parentNode in contentNode.ChildNodes)
             {
-                string identifier = node.Name;
                 Dictionary<string, string> extraParams;
-                switch (identifier)
+                switch (parentNode.Name)
                 {
-                    case "File":
-                        LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
-                        fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(node, "name", ""));
-
-                        extraParams = InterpretIdentifier(node, () =>
+                    case "Files":
+                        foreach (XmlNode node in parentNode.ChildNodes)
                         {
-                            return new FileContextEvaluator(fileBuilder);
-                        });
+                            LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
+                            fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(node, "name", ""));
 
-                        contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
+                            extraParams = InterpretIdentifier(node, () =>
+                            {
+                                return new FileContextEvaluator(fileBuilder);
+                            });
+
+                            contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
+                        }
                         break;
-                    case "Variable":
-                        var variableObj = new VariableObj(
-                            ParseDataType(GetAttributeOrDefault(node, "type", "")),
-                            GetAttributeOrDefault(node, "name", "")
-                        );
+                    case "Variables":
+                        foreach (XmlNode node in parentNode.ChildNodes)
+                        {
+                            var variableObj = new VariableObj(
+                                ParseDataType(GetAttributeOrDefault(node, "type", "")),
+                                GetAttributeOrDefault(node, "name", "")
+                            );
 
-                        extraParams = InterpretIdentifier(node, null);
+                            extraParams = InterpretIdentifier(node, null);
 
-                        contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
+                        }
                         break;
-                    case "Function":
-                        var functionObj = new FunctionObj(
-                            ParseDataType(GetAttributeOrDefault(node, "returnType", "")),
-                            GetAttributeOrDefault(node, "name", "")
-                        );
-                        functionObj.FuncParams = ParseFuncParams(GetAttributeOrDefault(node, "params", ""));
+                    case "Functions":
+                        foreach (XmlNode node in parentNode.ChildNodes)
+                        {
+                            var functionObj = new FunctionObj(
+                                ParseDataType(GetAttributeOrDefault(node, "returnType", "")),
+                                GetAttributeOrDefault(node, "name", "")
+                            );
+                            functionObj.FuncParams = ParseFuncParams(GetAttributeOrDefault(node, "params", ""));
 
-                        extraParams = InterpretIdentifier(node, null);
+                            extraParams = InterpretIdentifier(node, null);
 
-                        contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
+                        }
                         break;
-                    case "Property":
-                        var propertyObj = new VariableObj(
-                            ParseDataType(GetAttributeOrDefault(node, "type", "")),
-                            GetAttributeOrDefault(node, "name", "")
-                        );
+                    case "Properties":
+                        foreach (XmlNode node in parentNode.ChildNodes)
+                        {
+                            var propertyObj = new VariableObj(
+                                ParseDataType(GetAttributeOrDefault(node, "type", "")),
+                                GetAttributeOrDefault(node, "name", "")
+                            );
 
-                        extraParams = InterpretIdentifier(node, null);
+                            extraParams = InterpretIdentifier(node, null);
 
-                        contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
+                            contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
+                        }
                         break;
                     case "Constructor":
-                        List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(node, "params", ""));
+                        List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(parentNode, "params", ""));
 
-                        extraParams = InterpretIdentifier(node, null);
+                        extraParams = InterpretIdentifier(parentNode, null);
 
                         contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
                         break;
-                    case "Class":
-                        LangClassBuilderBase classBuilder = 
+                    case "Classes":
+                        foreach (XmlNode node in parentNode.ChildNodes)
+                        {
+                            LangClassBuilderBase classBuilder =
                             _langFactory.TryCast<ICreateClassBuilder>().CreateClassBuilder();
 
-                        classBuilder.CreateClass(GetAttributeOrDefault(node, "name", ""));
+                            classBuilder.CreateClass(GetAttributeOrDefault(node, "name", ""));
 
-                        extraParams = InterpretIdentifier(node, () =>
-                        {
-                            return new ClassContextEvaluator(classBuilder);
-                        });
+                            extraParams = InterpretIdentifier(node, () =>
+                            {
+                                return new ClassContextEvaluator(classBuilder);
+                            });
 
-                        contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
+                            contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
+                        }
                         break;
                     default:
                         throw new InvalidInterpreterOperationException(
-                            $"Identifier \"{identifier}\" not recognized.");
+                            $"Identifier \"{parentNode.Name}\" not recognized.");
                 }
             }
         }
