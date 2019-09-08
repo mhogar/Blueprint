@@ -8,7 +8,7 @@ using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.LangFactory
 {
-    public abstract class LangFactoryBase : TryCastBase
+    public abstract class LangFactoryBase
     {
         public LangFactoryBase(string name)
         {

@@ -9,7 +9,7 @@ using Blueprint.Logic.LangFileBuilder;
 
 namespace Blueprint.Interpreter.ContextEvaluator
 {
-    public abstract class ContextEvaluatorBase : TryCastBase
+    public abstract class ContextEvaluatorBase
     {
         public string Name
         {

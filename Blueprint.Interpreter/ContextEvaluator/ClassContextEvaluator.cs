@@ -20,31 +20,31 @@ namespace Blueprint.Interpreter.ContextEvaluator
 
         public void EvaluateVariable(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.TryCast<ICreateClassMemeber>().CreateClassMemeber(
+            TryCastUtil.TryCast<ICreateClassMemeber>(_classBuilder).CreateClassMemeber(
                 variableObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
         public void EvaluateProperty(VariableObj variableObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.TryCast<ICreateClassProperty>().CreateClassProperty(
+            TryCastUtil.TryCast<ICreateClassProperty>(_classBuilder).CreateClassProperty(
                 variableObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
 
         public void EvaluateFunction(FunctionObj functionObj, Dictionary<string, string> extraParams)
         {
-            _classBuilder.TryCast<ICreateClassFunction>().CreateClassFunction(
+            TryCastUtil.TryCast<ICreateClassFunction>(_classBuilder).CreateClassFunction(
                 functionObj, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
         public void EvaluateConstructor(List<VariableObj> constructorParams, Dictionary<string, string> extraParams)
         {
-            _classBuilder.TryCast<ICreateClassConstructor>().CreateClassConstructor(
+            TryCastUtil.TryCast<ICreateClassConstructor>(_classBuilder).CreateClassConstructor(
                 constructorParams, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PUBLIC));
         }
 
         public void EvaluateClass(LangClassBuilderBase classBuilder, Dictionary<string, string> extraParams)
         {
-            _classBuilder.TryCast<ICreateInnerClass>().CreateInnerClass(
+            TryCastUtil.TryCast<ICreateInnerClass>(_classBuilder).CreateInnerClass(
                 classBuilder, GetAccessModifierFromExtraParams(extraParams, AccessModifier.PRIVATE));
         }
     }

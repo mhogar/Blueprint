@@ -39,7 +39,7 @@ namespace Blueprint.Logic.Cpp
 
         public void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
-            CppClassBuilder cppClassBuilder = classBuilder.TryCast<CppClassBuilder>();
+            CppClassBuilder cppClassBuilder = TryCastUtil.TryCast<CppClassBuilder>(classBuilder);
 
             _classes.Add(cppClassBuilder);
         }

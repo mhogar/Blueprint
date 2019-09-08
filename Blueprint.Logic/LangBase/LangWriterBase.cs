@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public abstract class LangWriterBase : TryCastBase
+    public abstract class LangWriterBase
     {
         public abstract void BeginWriter(string filename);
         public abstract void EndWriter();

@@ -45,7 +45,7 @@
     <Compile Include="Cpp\CppWriter.cs" />
     <Compile Include="Cpp\CppFactory.cs" />
     <Compile Include="FilenameInfo.cs" />
-    <Compile Include="TryCastBase.cs" />
+    <Compile Include="TryCastUtil.cs" />
     <Compile Include="LangBase\LangClassBuilder.cs" />
     <Compile Include="LangBase\LangFileBuilder.cs" />
     <Compile Include="Cpp\CppClassBuilder.cs" />

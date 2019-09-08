@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic.LangClassBuilder
 {
-    public abstract class LangClassBuilderBase : TryCastBase
+    public abstract class LangClassBuilderBase
     {
         public abstract void CreateClass(string name, string namespaceName = "");
         public abstract void WriteClass(LangWriterBase langWriter);

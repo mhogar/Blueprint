@@ -103,7 +103,7 @@ namespace Blueprint.Logic
 
         public void CreateInnerClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
-            var cppClassBuilder = classBuilder.TryCast<CppClassBuilder>();
+            var cppClassBuilder = TryCastUtil.TryCast<CppClassBuilder>(classBuilder);
             cppClassBuilder._namespaceName = CppWriter.CreateNamespaceString(cppClassBuilder._namespaceName, _className);
 
             InnerClass innerClass;
@@ -115,7 +115,7 @@ namespace Blueprint.Logic
 
         public override void WriteClass(LangWriterBase langWriter)
         {
-            var cppWriter = langWriter.TryCast<CppWriter>();
+            var cppWriter = TryCastUtil.TryCast<CppWriter>(langWriter);
 
             WriteHeaderFile(cppWriter);
             WriteSourceFile(cppWriter);

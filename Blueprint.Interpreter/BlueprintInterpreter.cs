@@ -101,7 +101,7 @@ namespace Blueprint.Interpreter
                     case "Files":
                         foreach (XmlNode node in parentNode.ChildNodes)
                         {
-                            LangFileBuilderBase fileBuilder = _langFactory.TryCast<ICreateFileBuilder>().CreateFileBuilder();
+                            LangFileBuilderBase fileBuilder = TryCastUtil.TryCast<ICreateFileBuilder>(_langFactory).CreateFileBuilder();
                             fileBuilder.CreateFile(_outDir + GetAttributeOrDefault(node, "name", ""));
 
                             extraParams = InterpretIdentifier(node, () =>
@@ -109,7 +109,7 @@ namespace Blueprint.Interpreter
                                 return new FileContextEvaluator(fileBuilder);
                             });
 
-                            contextEvaluator.TryCast<IEvaluateFile>().EvaluateFile(fileBuilder, extraParams);
+                            TryCastUtil.TryCast<IEvaluateFile>(contextEvaluator).EvaluateFile(fileBuilder, extraParams);
                         }
                         break;
                     case "Variables":
@@ -122,7 +122,7 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateVariable>().EvaluateVariable(variableObj, extraParams);
+                            TryCastUtil.TryCast<IEvaluateVariable>(contextEvaluator).EvaluateVariable(variableObj, extraParams);
                         }
                         break;
                     case "Functions":
@@ -136,7 +136,7 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateFunction>().EvaluateFunction(functionObj, extraParams);
+                            TryCastUtil.TryCast<IEvaluateFunction>(contextEvaluator).EvaluateFunction(functionObj, extraParams);
                         }
                         break;
                     case "Properties":
@@ -149,15 +149,14 @@ namespace Blueprint.Interpreter
 
                             extraParams = InterpretIdentifier(node, null);
 
-                            contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
+                            TryCastUtil.TryCast<IEvaluateProperty>(contextEvaluator).EvaluateProperty(propertyObj, extraParams);
                         }
                         break;
                     case "Classes":
                     case "InnerClasses":
                         foreach (XmlNode node in parentNode.ChildNodes)
                         {
-                            LangClassBuilderBase classBuilder =
-                            _langFactory.TryCast<ICreateClassBuilder>().CreateClassBuilder();
+                            LangClassBuilderBase classBuilder = TryCastUtil.TryCast<ICreateClassBuilder>(_langFactory).CreateClassBuilder();
 
                             classBuilder.CreateClass(GetAttributeOrDefault(node, "name", ""));
 
@@ -166,7 +165,7 @@ namespace Blueprint.Interpreter
                                 return new ClassContextEvaluator(classBuilder);
                             });
 
-                            contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
+                            TryCastUtil.TryCast<IEvaluateClass>(contextEvaluator).EvaluateClass(classBuilder, extraParams);
                         }
                         break;
                     case "Constructor":
@@ -174,7 +173,7 @@ namespace Blueprint.Interpreter
 
                         extraParams = InterpretIdentifier(parentNode, null);
 
-                        contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
+                        TryCastUtil.TryCast<IEvaluateConstructor>(contextEvaluator).EvaluateConstructor(constructorParams, extraParams);
                         break;
                     default:
                         /* Note: this should be impossible since an invalid identifier would be caught by the 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public class TryCastBase
+    public static class TryCastUtil
     {
         public class TryCastFailedException : Exception
         {
@@ -28,12 +28,12 @@ namespace Blueprint.Logic
             }
         }
 
-        public InterfaceType TryCast<InterfaceType>() where InterfaceType : class
+        public static InterfaceType TryCast<InterfaceType>(object srcObj) where InterfaceType : class
         {
-            var interfaceObj = this as InterfaceType;
+            var interfaceObj = srcObj as InterfaceType;
             if (interfaceObj == null)
             {
-                throw new TryCastFailedException(this.GetType().Name, typeof(InterfaceType).Name);
+                throw new TryCastFailedException(srcObj.GetType().Name, typeof(InterfaceType).Name);
             }
 
             return interfaceObj;
