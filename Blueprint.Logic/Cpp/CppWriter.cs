@@ -111,34 +111,51 @@ namespace Blueprint.Logic
             }
         }
 
-        public static string CreateVariableString(VariableObj variableObj, string namespaceName="")
+        public static string CreateNamespaceString(string objStr, string namespaceName)
         {
-            string namespaceStr = "";
-            if (namespaceName != "")
+            if (namespaceName == "")
             {
-                namespaceStr = namespaceName + "::";
+                return objStr;
             }
 
+            if (objStr == "")
+            {
+                return namespaceName;
+            }
+
+            return namespaceName + "::" + objStr;
+        }
+
+        public static void WriteVariableString(LangStreamWrapper stream, VariableObj variableObj, string namespaceName = "")
+        {
             string typeString = ConvertDataType(variableObj.Type);
             if (typeString != "")
             {
                 typeString += " ";
             }
 
-            return typeString + namespaceStr + variableObj.Name;
+            stream.Write(typeString + CreateNamespaceString(variableObj.Name, namespaceName));
         }
 
-        public static string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")
+        public static void WriteFunctionString(LangStreamWrapper stream, FunctionObj functionObj, string namespaceName = "")
         {
-            string funcStr = CreateVariableString(functionObj.TypeAndName, namespaceName) + "(";
+            WriteVariableString(stream, functionObj.TypeAndName, namespaceName);
+            stream.Write("(");
+
+            int index = 0;
             foreach (VariableObj funcParam in functionObj.FuncParams)
             {
-                funcStr += CreateVariableString(funcParam, "") + ", ";
-            }
-            funcStr = funcStr.TrimEnd(", ".ToCharArray());
-            funcStr += ")";
+                WriteVariableString(stream, funcParam, "");
 
-            return funcStr;
+                //add comma if not the last param
+                if (index != functionObj.FuncParams.Count - 1)
+                {
+                    stream.Write(", ");
+                }
+
+                index++;
+            }
+            stream.Write(")");
         }
     }
 }

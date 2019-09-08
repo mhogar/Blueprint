@@ -71,13 +71,15 @@ namespace Blueprint.Logic.Cpp
             stream.NewLine();
             foreach (VariableObj variableObj in _variables)
             {
-                stream.WriteLine(CppWriter.CreateVariableString(variableObj) + ";");
+                CppWriter.WriteVariableString(stream, variableObj);
+                stream.WriteLine(";");
             }
 
             stream.NewLine();
             foreach (FunctionObj functionObj in _functions)
             {
-                stream.WriteLine(CppWriter.CreateFunctionString(functionObj) + ";");
+                CppWriter.WriteFunctionString(stream, functionObj);
+                stream.WriteLine(";");
             }
         }
 
@@ -86,7 +88,7 @@ namespace Blueprint.Logic.Cpp
             foreach (FunctionObj functionObj in _functions)
             {
                 stream.NewLine();
-                stream.WriteLine(CppWriter.CreateFunctionString(functionObj));
+                CppWriter.WriteFunctionString(stream, functionObj);
                 stream.WriteLine("{");
                 stream.WriteLine("}");
             }

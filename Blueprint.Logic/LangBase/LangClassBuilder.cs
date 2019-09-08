@@ -8,7 +8,7 @@ namespace Blueprint.Logic.LangClassBuilder
 {
     public abstract class LangClassBuilderBase : TryCastBase
     {
-        public abstract void CreateClass(string name);
+        public abstract void CreateClass(string name, string namespaceName = "");
         public abstract void WriteClass(LangWriterBase langWriter);
     }
 

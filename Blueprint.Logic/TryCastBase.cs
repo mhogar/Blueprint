@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    //TODO: rename this class when I come up with a name for it
     public class TryCastBase
     {
         public class TryCastFailedException : Exception

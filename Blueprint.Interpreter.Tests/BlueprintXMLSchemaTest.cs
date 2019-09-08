@@ -19,6 +19,7 @@ namespace Blueprint.Interpreter.Tests
         private XmlNode _fileClassVariableNode;
         private XmlNode _fileClassFunctionNode;
         private XmlNode _fileClassPropertyNode;
+        private XmlNode _fileClassInnerClassNode;
 
         [TestInitialize]
         public void Initialize()
@@ -43,6 +44,7 @@ namespace Blueprint.Interpreter.Tests
             _fileClassVariableNode = fileClassContentNode.ChildNodes[1].FirstChild; //content/Variables/Variable
             _fileClassFunctionNode = fileClassContentNode.ChildNodes[2].FirstChild; //content/Functions/Function
             _fileClassPropertyNode = fileClassContentNode.ChildNodes[3].FirstChild; //content/Properties/Property
+            _fileClassInnerClassNode = fileClassContentNode.ChildNodes[4].FirstChild; //content/InnerClasses/Class
         }
 
         #region Helpers
@@ -373,6 +375,32 @@ namespace Blueprint.Interpreter.Tests
         public void TestFileClassPropertyAccessModifierOccurences()
         {
             TestNodeOccurences(_fileClassPropertyNode.FirstChild, 0, 1);
+        }
+        #endregion
+
+        #region FileClassInnerClass
+        [TestMethod, TestCategory("File"), TestCategory("FileClass"), TestCategory("FileClassInnerClass")]
+        public void TestFileInnerClassesOccurences()
+        {
+            TestNodeOccurences(_fileClassInnerClassNode.ParentNode, 0, 1);
+        }
+
+        [TestMethod, TestCategory("File"), TestCategory("FileClass"), TestCategory("FileClassInnerClass")]
+        public void TestFileClassInnerClassNameRequired()
+        {
+            TestAttributeRequired(_fileClassInnerClassNode, "name");
+        }
+
+        [TestMethod, TestCategory("File"), TestCategory("FileClass"), TestCategory("FileClassInnerClass")]
+        public void TestFileClassInnerClassOccurences()
+        {
+            TestNodeOccurences(_fileClassInnerClassNode, 1, 0);
+        }
+
+        [TestMethod, TestCategory("File"), TestCategory("FileClass"), TestCategory("FileClassInnerClass")]
+        public void TestFileClassInnerClassContentOccurences()
+        {
+            TestNodeOccurences(_fileClassInnerClassNode.FirstChild, 0, 1);
         }
         #endregion
 

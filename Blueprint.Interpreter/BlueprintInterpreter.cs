@@ -152,14 +152,8 @@ namespace Blueprint.Interpreter
                             contextEvaluator.TryCast<IEvaluateProperty>().EvaluateProperty(propertyObj, extraParams);
                         }
                         break;
-                    case "Constructor":
-                        List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(parentNode, "params", ""));
-
-                        extraParams = InterpretIdentifier(parentNode, null);
-
-                        contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
-                        break;
                     case "Classes":
+                    case "InnerClasses":
                         foreach (XmlNode node in parentNode.ChildNodes)
                         {
                             LangClassBuilderBase classBuilder =
@@ -174,6 +168,13 @@ namespace Blueprint.Interpreter
 
                             contextEvaluator.TryCast<IEvaluateClass>().EvaluateClass(classBuilder, extraParams);
                         }
+                        break;
+                    case "Constructor":
+                        List<VariableObj> constructorParams = ParseFuncParams(GetAttributeOrDefault(parentNode, "params", ""));
+
+                        extraParams = InterpretIdentifier(parentNode, null);
+
+                        contextEvaluator.TryCast<IEvaluateConstructor>().EvaluateConstructor(constructorParams, extraParams);
                         break;
                     default:
                         /* Note: this should be impossible since an invalid identifier would be caught by the 

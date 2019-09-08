@@ -32,6 +32,13 @@
                   <accessModifier>protected</accessModifier>
                 </Property>
               </Properties>
+              <InnerClasses>
+                <Class name="InnerFoo">
+                  <content>
+                    <Constructor></Constructor>
+                  </content>
+                </Class>
+              </InnerClasses>
             </content>
           </Class>
         </Classes>
