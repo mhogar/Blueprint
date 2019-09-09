@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprint.Interpreter", "Bl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprint.Interpreter.Tests", "Blueprint.Interpreter.Tests\Blueprint.Interpreter.Tests.csproj", "{6E078969-1A47-47FA-90BB-CACAA2165D1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blueprint.Tests", "BlueprintTests\Blueprint.Tests.csproj", "{5742041D-496C-42C1-B258-773D13746302}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6E078969-1A47-47FA-90BB-CACAA2165D1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E078969-1A47-47FA-90BB-CACAA2165D1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E078969-1A47-47FA-90BB-CACAA2165D1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5742041D-496C-42C1-B258-773D13746302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5742041D-496C-42C1-B258-773D13746302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5742041D-496C-42C1-B258-773D13746302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5742041D-496C-42C1-B258-773D13746302}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

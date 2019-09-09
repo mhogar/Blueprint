@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Blueprint.Interpreter.Tests
 {
     [TestClass]
-    public class BlueprintXMLSchemaTest
+    public class BlueprintXMLSchemaTests
     {
         private XmlDocument _doc;
         private XmlNode _blueprintNode;
