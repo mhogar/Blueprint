@@ -152,6 +152,8 @@ namespace Blueprint
                 {
                     Console.WriteLine("Blueprint Schema Validation Error: " + e.Message);
                 }
+
+                Console.WriteLine("Completed Successfully. Output files in " + parseArgsResult.outDir);
             }
             catch (ParseArgsException e)
             {
