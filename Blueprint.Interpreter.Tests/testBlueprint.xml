@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Blueprint>
+  <Files>
+    <File name="Foo">
+      <content>
+        <Variables>
+          <Variable name="fileVar" type="string" />
+        </Variables>
+        <Functions>
+          <Function name="FileFunction" returnType="void" params="param1:string" />
+        </Functions>
+        <Classes>
+          <Class name="Foo">
+            <accessModifier>public</accessModifier>
+            <content>
+              <Constructor params="param1:string">
+                <accessModifier>public</accessModifier>
+              </Constructor>
+              <Variables>
+                <Variable name="member" type="string">
+                  <accessModifier>public</accessModifier>
+                </Variable>
+              </Variables>
+              <Functions>
+                <Function name="ClassFunction" returnType="void" params="param1:string">
+                  <accessModifier>public</accessModifier>
+                </Function>
+              </Functions>
+              <Properties>
+                <Property name="property" type="string">
+                  <accessModifier>public</accessModifier>
+                </Property>
+              </Properties>
+              <InnerClasses>
+                <Class name="InnerFoo">
+                  <content></content>
+                </Class>
+              </InnerClasses>
+            </content>
+          </Class>
+        </Classes>
+      </content>
+    </File>
+  </Files>
+</Blueprint>

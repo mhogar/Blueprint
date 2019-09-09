@@ -13,9 +13,21 @@ namespace Blueprint.Logic
         PRIVATE
     }
 
+    public enum DataType
+    {
+        NONE,
+        VOID,
+        BOOLEAN,
+        CHAR,
+        STRING,
+        INT_8, INT_16, INT_32, INT_64,
+        UINT_8, UINT_16, UINT_32, UINT_64,
+        FLOAT_32, FLOAT_64
+    }
+
     public class VariableObj
     {
-        public string Type
+        public DataType Type
         {
             get;
             set;
@@ -32,7 +44,7 @@ namespace Blueprint.Logic
         {
         }
 
-        public VariableObj(string type = "", string name = "")
+        public VariableObj(DataType type = DataType.NONE, string name = "")
         {
             Type = type;
             Name = name;
@@ -47,7 +59,7 @@ namespace Blueprint.Logic
             set;
         }
 
-        public string Type
+        public DataType Type
         {
             get
             {
@@ -96,7 +108,7 @@ namespace Blueprint.Logic
             ContentDelegate = contentDelegate;
         }
 
-        public FunctionObj(string type = "", string name = "", Action<LangStreamWrapper> contentDelegate = null)
+        public FunctionObj(DataType type = DataType.NONE, string name = "", Action<LangStreamWrapper> contentDelegate = null)
             : this(new VariableObj(type, name), contentDelegate)
         {
         }

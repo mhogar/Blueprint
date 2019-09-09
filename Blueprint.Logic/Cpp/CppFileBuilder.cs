@@ -3,74 +3,95 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.Cpp
 {
-    public class CppFileBuilder : LangFileBuilderBase
+    public class CppFileBuilder : LangFileBuilderBase, ICreateFileVariable, ICreateFileFunction, ICreateFileClass
     {
+        private string _filename;
+        private List<VariableObj> _variables;
+        private List<FunctionObj> _functions;
         private List<CppClassBuilder> _classes;
 
         public CppFileBuilder()
         {
+            _variables = new List<VariableObj>();
+            _functions = new List<FunctionObj>();
             _classes = new List<CppClassBuilder>();
         }
 
-        public override UInt32 GetSupportedFlags()
+        public override void CreateFile(string filename)
         {
-            UInt32 flags = 0;
-            flags &= FILE_VARAIBLE;
-            flags &= FILE_FUNCTION;
-            flags &= FILE_CLASS;
-
-            return flags;
+            _filename = filename;
         }
 
-        public override void CreateFileVariable(VariableObj variableObj)
+        public void CreateFileVariable(VariableObj variableObj)
         {
-            throw new NotImplementedException();
+            _variables.Add(variableObj);
         }
 
-        public override void CreateFileFunction(FunctionObj functionObj)
+        public void CreateFileFunction(FunctionObj functionObj)
         {
-            throw new NotImplementedException();
+            _functions.Add(functionObj);
         }
 
-        public override void CreateFileClass(LangClassBuilderBase classBuilder)
+        public void CreateFileClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
-            var cppClassBuilder = classBuilder as CppClassBuilder;
-            if (cppClassBuilder == null)
-            {
-                throw new InvalidCastException("LangClassBuilderBase was not a CppClassBuilder.");
-            }
+            CppClassBuilder cppClassBuilder = TryCastUtil.TryCast<CppClassBuilder>(classBuilder);
 
             _classes.Add(cppClassBuilder);
         }
 
-        public override void WriteFile(ILangWriter langWriter)
+        public override void WriteFile()
         {
-            var cppWriter = langWriter as CppWriter;
-            if (cppWriter == null)
+            var cppWriter = new CppWriter();
+            cppWriter.BeginWriter(_filename);
             {
-                throw new InvalidCastException("ILangWriter was not a CppWriter.");
-            }
+                //write the beginning of the files
+                cppWriter.HeaderStream.WriteLine("#pragma once");
+                cppWriter.SourceStream.WriteLine($"#include \"{new FilenameInfo(_filename).Basename}.h\"");
 
-            foreach (CppClassBuilder classBuilder in _classes)
-            {
-                cppWriter.HeaderStream.NewLine();
-                cppWriter.SourceStream.NewLine();
-                classBuilder.WriteClass(cppWriter);
-            }
+                WriterHeaderFile(cppWriter.HeaderStream);
+                WriteSourceFile(cppWriter.SourceStream);
 
-            WriterHeaderFile(cppWriter.HeaderStream);
-            WriteSourceFile(cppWriter.SourceStream);
+                //write any classes
+                foreach (CppClassBuilder classBuilder in _classes)
+                {
+                    cppWriter.HeaderStream.NewLine();
+                    classBuilder.WriteClass(cppWriter);
+                }
+            }
+            cppWriter.EndWriter();
         }
 
         private void WriterHeaderFile(LangStreamWrapper stream)
         {
+            stream.NewLine();
+            foreach (VariableObj variableObj in _variables)
+            {
+                CppWriter.WriteVariableString(stream, variableObj);
+                stream.WriteLine(";");
+            }
+
+            stream.NewLine();
+            foreach (FunctionObj functionObj in _functions)
+            {
+                CppWriter.WriteFunctionString(stream, functionObj);
+                stream.WriteLine(";");
+            }
         }
 
         private void WriteSourceFile(LangStreamWrapper stream)
         {
+            foreach (FunctionObj functionObj in _functions)
+            {
+                stream.NewLine();
+                CppWriter.WriteFunctionString(stream, functionObj);
+                stream.WriteLine("{");
+                stream.WriteLine("}");
+            }
         }
     }
 }

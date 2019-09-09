@@ -7,17 +7,11 @@ using System.Threading.Tasks;
 
 namespace Blueprint.Logic
 {
-    public class CppWriter : ILangWriter
+    public class CppWriter : LangWriterBase
     {
-        private FilenameInfo _headerFilenameInfo;
-        private FilenameInfo _sourceFilenameInfo;
-
-        public CppWriter(string outFile)
+        public CppWriter()
         {
-            _headerFilenameInfo = new FilenameInfo(outFile + ".h");
             _headerStream = null;
-
-            _sourceFilenameInfo = new FilenameInfo(outFile + ".cpp");
             _sourceStream = null;
         }
 
@@ -53,51 +47,115 @@ namespace Blueprint.Logic
             }
         }
 
-        public void BeginWriter()
+        public override void BeginWriter(string filename)
         {
+            var headerFilenameInfo = new FilenameInfo(filename);
+            headerFilenameInfo.Extname = ".h";
             HeaderStream = new LangStreamWrapper(
                 new StreamWriter(
-                    new FileStream(_headerFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
+                    new FileStream(headerFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                 )
             );
-            HeaderStream.WriteLine("#pragma once");
 
+            var sourceFilenameInfo = new FilenameInfo(filename);
+            sourceFilenameInfo.Extname = ".cpp";
             SourceStream = new LangStreamWrapper(
                new StreamWriter(
-                   new FileStream(_sourceFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
+                   new FileStream(sourceFilenameInfo.FullFilename, FileMode.Create, FileAccess.Write)
                )
            );
-            SourceStream.WriteLine($"#include \"{_headerFilenameInfo.BaseAndExtname}\"");
         }
 
-        public void EndWriter()
+        public override void EndWriter()
         {
             HeaderStream.Close();
             SourceStream.Close();
         }
 
-        public static string CreateVariableString(VariableObj variableObj, string namespaceName="")
+        public static string ConvertDataType(DataType dataType)
         {
-            string namespaceStr = "";
-            if (namespaceName != "")
+            switch (dataType)
             {
-                namespaceStr = namespaceName + "::";
+                case DataType.NONE:
+                    return "";
+                case DataType.VOID:
+                    return "void";
+                case DataType.BOOLEAN:
+                    return "bool";
+                case DataType.CHAR:
+                    return "char";
+                case DataType.STRING:
+                    return "const char*";
+                case DataType.INT_8:
+                    return "char";
+                case DataType.INT_16:
+                    return "short";
+                case DataType.INT_32:
+                    return "int";
+                case DataType.INT_64:
+                    return "long long";
+                case DataType.UINT_8:
+                    return "unsigned char";
+                case DataType.UINT_16:
+                    return "unsigned short";
+                case DataType.UINT_32:
+                    return "unsigned int";
+                case DataType.UINT_64:
+                    return "unsigned long long";
+                case DataType.FLOAT_32:
+                    return "float";
+                case DataType.FLOAT_64:
+                    return "double";
+                default:
+                    throw new ArgumentException("Invalid data type.");
             }
-
-            return variableObj.Type + " " + namespaceStr + variableObj.Name;
         }
 
-        public static string CreateFunctionString(FunctionObj functionObj, string namespaceName = "")
+        public static string CreateNamespaceString(string objStr, string namespaceName)
         {
-            string funcStr = CreateVariableString(functionObj.TypeAndName, namespaceName) + "(";
+            if (namespaceName == "")
+            {
+                return objStr;
+            }
+
+            if (objStr == "")
+            {
+                return namespaceName;
+            }
+
+            return namespaceName + "::" + objStr;
+        }
+
+        public static void WriteVariableString(LangStreamWrapper stream, VariableObj variableObj, string namespaceName = "")
+        {
+            string typeString = ConvertDataType(variableObj.Type);
+            if (typeString != "")
+            {
+                typeString += " ";
+            }
+
+            stream.Write(typeString + CreateNamespaceString(variableObj.Name, namespaceName));
+        }
+
+        public static void WriteFunctionString(LangStreamWrapper stream, FunctionObj functionObj, string namespaceName = "")
+        {
+            WriteVariableString(stream, functionObj.TypeAndName, namespaceName);
+            stream.Write("(");
+
+            int index = 0;
             foreach (VariableObj funcParam in functionObj.FuncParams)
             {
-                funcStr += CreateVariableString(funcParam, "") + ", ";
-            }
-            funcStr = funcStr.TrimEnd(", ".ToCharArray());
-            funcStr += ")";
+                WriteVariableString(stream, funcParam, "");
 
-            return funcStr;
+                //add comma if not the last param
+                if (index != functionObj.FuncParams.Count - 1)
+                {
+                    stream.Write(", ");
+                }
+
+                index++;
+            }
+            stream.Write(")");
         }
     }
 }

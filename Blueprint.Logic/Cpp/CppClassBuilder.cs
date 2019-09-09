@@ -3,29 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic
 {
-    public class CppClassBuilder : LangClassBuilderBase
+    public class CppClassBuilder : LangClassBuilderBase, 
+        ICreateClassConstructor, ICreateClassMemeber, ICreateClassFunction, ICreateClassProperty, ICreateInnerClass
     {
-        public override UInt32 GetSupportedFlags()
-        {
-            UInt32 flags = 0;
-            flags &= CLASS_CONSTRUCTOR;
-            flags &= CLASS_MEMBER;
-            flags &= CLASS_FUNCTION;
-            flags &= CLASS_PROPERTY;
-            flags &= CLASS_SUB_CLASS;
-
-            return flags;
-        }
-
-        private struct ClassObj
-        {
-            public string className;
-            public AccessModifier accessModifier;
-        }
-
         private struct ClassMemeber
         {
             public VariableObj variableObj;
@@ -39,25 +23,32 @@ namespace Blueprint.Logic
             public bool isOverridable;
         }
 
-        private ClassObj _classObj;
+        private struct InnerClass
+        {
+            public CppClassBuilder classBuilder;
+            public AccessModifier accessModifier;
+        }
+
+        private string _className;
+        private string _namespaceName;
         private List<ClassMemeber> _members;
         private List<ClassFunction> _functions;
-        private List<CppClassBuilder> _subClasses;
+        private List<InnerClass> _innerClasses;
 
         public CppClassBuilder()
         {
             _members = new List<ClassMemeber>();
             _functions = new List<ClassFunction>();
-            _subClasses = new List<CppClassBuilder>();
+            _innerClasses = new List<InnerClass>();
         }
 
-        public override void CreateClass(string className, AccessModifier accessModifier)
+        public override void CreateClass(string className, string namespaceName = "")
         {
-            _classObj.className = className;
-            _classObj.accessModifier = accessModifier;
+            _className = className;
+            _namespaceName = namespaceName;
         }
 
-        public override void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
+        public void CreateClassFunction(FunctionObj functionObj, AccessModifier accessModifier, 
             bool isOverridable=false)
         {
             ClassFunction classFunction;
@@ -68,7 +59,7 @@ namespace Blueprint.Logic
             _functions.Add(classFunction);
         }
 
-        public override void CreateClassMemeber(VariableObj variableObj, AccessModifier accessModifier)
+        public void CreateClassMemeber(VariableObj variableObj, AccessModifier accessModifier)
         {
             ClassMemeber classMemeber;
             classMemeber.variableObj = variableObj;
@@ -77,7 +68,7 @@ namespace Blueprint.Logic
             _members.Add(classMemeber);
         }
 
-        public override void CreateClassProperty(VariableObj variableObj, AccessModifier accessModifier)
+        public void CreateClassProperty(VariableObj variableObj, AccessModifier accessModifier)
         {
             if (accessModifier != AccessModifier.PRIVATE)
             {
@@ -88,11 +79,11 @@ namespace Blueprint.Logic
 
             var getFunc = new FunctionObj(variableObj.Type, "get_" + variableObj.Name, (stream) =>
             {
-                stream.WriteLine("return this->" + variableObj.Name);
+                stream.WriteLine("return this->" + variableObj.Name + ";");
             });
             CreateClassFunction(getFunc, AccessModifier.PUBLIC, false);
 
-            var setFunc = new FunctionObj("void", "set_" + variableObj.Name, (stream) =>
+            var setFunc = new FunctionObj(DataType.VOID, "set_" + variableObj.Name, (stream) =>
             {
                 stream.WriteLine("this->" + variableObj.Name + " = " + variableObj.Name + ";");
             });
@@ -100,103 +91,113 @@ namespace Blueprint.Logic
             CreateClassFunction(setFunc, AccessModifier.PUBLIC, false);
         }
 
-        public override void CreateConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
+        public void CreateClassConstructor(List<VariableObj> constructorParams, AccessModifier accessModifier)
         {
-            var constructor = new FunctionObj("", _classObj.className);
+            var constructor = new FunctionObj(DataType.NONE, _className);
             constructor.FuncParams = constructorParams;
             CreateClassFunction(constructor, accessModifier);
 
-            var deconstructor = new FunctionObj("", "~" + _classObj.className);
+            var deconstructor = new FunctionObj(DataType.NONE, "~" + _className);
             CreateClassFunction(deconstructor, accessModifier, true);
         }
 
-        public override void CreateSubClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
+        public void CreateInnerClass(LangClassBuilderBase classBuilder, AccessModifier accessModifier)
         {
-            var cppClassBuilder = classBuilder as CppClassBuilder;
-            if (cppClassBuilder == null)
-            {
-                throw new InvalidCastException("LangClassBuilderBase was not a CppClassBuilder.");
-            }
+            var cppClassBuilder = TryCastUtil.TryCast<CppClassBuilder>(classBuilder);
+            cppClassBuilder._namespaceName = CppWriter.CreateNamespaceString(cppClassBuilder._namespaceName, _className);
 
-            _subClasses.Add(cppClassBuilder);
+            InnerClass innerClass;
+            innerClass.classBuilder = cppClassBuilder;
+            innerClass.accessModifier = accessModifier;
+
+            _innerClasses.Add(innerClass);
         }
 
-        public override void WriteClass(ILangWriter langWriter)
+        public override void WriteClass(LangWriterBase langWriter)
         {
-            var cppWriter = langWriter as CppWriter;
-            if (cppWriter == null)
-            {
-                throw new InvalidCastException("ILangWriter was not a CppWriter.");
-            }
+            var cppWriter = TryCastUtil.TryCast<CppWriter>(langWriter);
 
-            WriterHeaderFile(cppWriter.HeaderStream);
-            WriteSourceFile(cppWriter.SourceStream);
+            WriteHeaderFile(cppWriter);
+            WriteSourceFile(cppWriter);
         }
 
-        private void WriterHeaderFile(LangStreamWrapper stream)
+        private delegate void WriteToStream();
+
+        private void WriteHeaderFile(CppWriter cppWriter)
         {
-            var publicMembers = new List<string>();
-            var protectedMembers = new List<string>();
-            var privateMembers = new List<string>();
+            LangStreamWrapper stream = cppWriter.HeaderStream;
+
+            var publicMembers = new List<WriteToStream>();
+            var protectedMembers = new List<WriteToStream>();
+            var privateMembers = new List<WriteToStream>();
+
+            Action<AccessModifier, WriteToStream> EvaluateAccessModifier = (accessModifier, writeDelegate) =>
+            {
+                switch (accessModifier)
+                {
+                    case AccessModifier.PRIVATE:
+                        privateMembers.Add(writeDelegate);
+                        break;
+                    case AccessModifier.PROTECTED:
+                        protectedMembers.Add(writeDelegate);
+                        break;
+                    default: //ACCESS_PUBLIC
+                        publicMembers.Add(writeDelegate);
+                        break;
+                }
+            };
 
             //init member string
             {
+                foreach (InnerClass innerClass in _innerClasses)
+                {
+                    EvaluateAccessModifier(innerClass.accessModifier, () => 
+                    {
+                        innerClass.classBuilder.WriteClass(cppWriter);
+                        stream.NewLine();
+                    });
+                }
+
                 foreach (ClassFunction classFunc in _functions)
                 {
-                    string funcStr = CppWriter.CreateFunctionString(classFunc.functionObj);
-                    switch (classFunc.accessModifier)
+                    EvaluateAccessModifier(classFunc.accessModifier, () => 
                     {
-                        case AccessModifier.PRIVATE:
-                            privateMembers.Add(funcStr);
-                            break;
-                        case AccessModifier.PROTECTED:
-                            protectedMembers.Add(funcStr);
-                            break;
-                        default: //ACCESS_PUBLIC
-                            publicMembers.Add(funcStr);
-                            break;
-                    }
+                        CppWriter.WriteFunctionString(stream, classFunc.functionObj);
+                        stream.WriteLine(";");
+                    });
                 }
 
                 foreach (ClassMemeber classMemeber in _members)
                 {
-                    string memberStr = CppWriter.CreateVariableString(classMemeber.variableObj);
-                    switch (classMemeber.accessModifier)
+                    EvaluateAccessModifier(classMemeber.accessModifier, () => 
                     {
-                        case AccessModifier.PRIVATE:
-                            privateMembers.Add(memberStr);
-                            break;
-                        case AccessModifier.PROTECTED:
-                            protectedMembers.Add(memberStr);
-                            break;
-                        default: //ACCESS_PUBLIC
-                            publicMembers.Add(memberStr);
-                            break;
-                    }
+                        CppWriter.WriteVariableString(stream, classMemeber.variableObj);
+                        stream.WriteLine(";");
+                    });
                 }
             }
 
             //write the file
             {
-                stream.WriteLine("class " + _classObj.className);
+                stream.WriteLine("class " + _className);
                 stream.WriteLine("{");
                 {
-                    var memberStringTuples = new List<Tuple<string, List<string>>>();
-                    memberStringTuples.Add(new Tuple<string, List<string>>("public", publicMembers));
-                    memberStringTuples.Add(new Tuple<string, List<string>>("protected", protectedMembers));
-                    memberStringTuples.Add(new Tuple<string, List<string>>("private", privateMembers));
+                    var memberTuples = new List<Tuple<string, List<WriteToStream>>>();
+                    memberTuples.Add(new Tuple<string, List<WriteToStream>>("public", publicMembers));
+                    memberTuples.Add(new Tuple<string, List<WriteToStream>>("protected", protectedMembers));
+                    memberTuples.Add(new Tuple<string, List<WriteToStream>>("private", privateMembers));
 
-                    foreach (Tuple<string, List<string>> memberStringTuple in memberStringTuples)
+                    foreach (Tuple<string, List<WriteToStream>> memberTuple in memberTuples)
                     {
-                        List<string> memberStrings = memberStringTuple.Item2;
-                        if (memberStrings.Count > 0)
+                        List<WriteToStream> writeMemberDelegates = memberTuple.Item2;
+                        if (writeMemberDelegates.Count > 0)
                         {
-                            stream.WriteLine(memberStringTuple.Item1 + ":");
+                            stream.WriteLine(memberTuple.Item1 + ":");
 
                             stream.IncreaseTab();
-                            foreach (string memberStr in memberStrings)
+                            foreach (WriteToStream writeMemberDelegate in writeMemberDelegates)
                             {
-                                stream.WriteLine(memberStr + ";");
+                                writeMemberDelegate.Invoke();
                             }
                             stream.DecreaseTab();
 
@@ -208,11 +209,16 @@ namespace Blueprint.Logic
             }
         }
 
-        private void WriteSourceFile(LangStreamWrapper stream)
+        private void WriteSourceFile(CppWriter cppWriter)
         {
+            LangStreamWrapper stream = cppWriter.SourceStream;
+
             foreach (ClassFunction classFunc in _functions)
             {
-                stream.WriteLine(CppWriter.CreateFunctionString(classFunc.functionObj, _classObj.className));
+                stream.NewLine();
+
+                CppWriter.WriteFunctionString(stream, classFunc.functionObj, CppWriter.CreateNamespaceString(_className, _namespaceName));
+                stream.NewLine();
                 stream.WriteLine("{");
 
                 stream.IncreaseTab();

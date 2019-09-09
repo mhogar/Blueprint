@@ -10,11 +10,13 @@ namespace Blueprint.Logic
     public class LangStreamWrapper
     {
         private byte _tabLevel;
+        private bool _isNewLine;
         private StreamWriter _stream;
 
         public LangStreamWrapper(StreamWriter stream)
         {
             _tabLevel = 0;
+            _isNewLine = true;
             _stream = stream;
         }
 
@@ -42,12 +44,24 @@ namespace Blueprint.Logic
 
         public void Write(string text)
         {
-            for (byte i = 0; i < _tabLevel; i++)
+            if (_isNewLine)
             {
-                _stream.Write('\t');
+                for (byte i = 0; i < _tabLevel; i++)
+                {
+                    _stream.Write('\t');
+                }
+
+                _isNewLine = false;
+            }
+
+            //if there is no text to write, don't update anything else
+            if (text == String.Empty)
+            {
+                return;
             }
 
             _stream.Write(text);
+            _isNewLine = false;
         }
 
         public void WriteLine(string text)
@@ -59,6 +73,7 @@ namespace Blueprint.Logic
         public void NewLine()
         {
             _stream.WriteLine();
+            _isNewLine = true;
         }
     }
 }

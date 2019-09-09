@@ -3,30 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blueprint.Logic.LangFactory;
+using Blueprint.Logic.LangFileBuilder;
+using Blueprint.Logic.LangClassBuilder;
 
 namespace Blueprint.Logic.Cpp
 {
-    public class CppFactory : LangFactoryBase
+    public class CppFactory : LangFactoryBase, ICreateFileBuilder, ICreateClassBuilder
     {
-        public override UInt32 GetSupportedFlags()
+        public CppFactory() : base("Cpp")
         {
-            UInt32 flags = 0;
-            flags &= CLASS_BUILDER;
-
-            return flags;
         }
 
-        public override ILangWriter CreateLangWriter(string outDir)
-        {
-            return new CppWriter(outDir);
-        }
-
-        public override LangFileBuilderBase CreateFileBuilder()
+        public LangFileBuilderBase CreateFileBuilder()
         {
             return new CppFileBuilder();
         }
 
-        public override LangClassBuilderBase CreateClassBuilder()
+        public LangClassBuilderBase CreateClassBuilder()
         {
             return new CppClassBuilder();
         }

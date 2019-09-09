@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="XMLSchema1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="Class">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="accessModifier" type="xs:string" minOccurs="0"/>
+        <xs:element name="content" minOccurs="0">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="Constructor" minOccurs="0">
+                <xs:complexType>
+                  <xs:all minOccurs="0">
+                    <xs:element name="accessModifier" type="xs:string"/>
+                  </xs:all>
+                  <xs:attribute name="params" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Variables" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="Variable" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="accessModifier" type="xs:string" minOccurs="0"/>
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Functions" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="Function" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="returnType" type="xs:string" use="required" />
+                        <xs:attribute name="params" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Properties" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="Property" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="accessModifier" type="xs:string" minOccurs="0" />
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="InnerClasses" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element ref="Class" minOccurs="1" maxOccurs="unbounded" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="Blueprint">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="Files">
+          <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+              <xs:element name="File">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="content" minOccurs="0">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="Variables" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence maxOccurs="unbounded">
+                                <xs:element name="Variable">
+                                  <xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" use="required" />
+                                    <xs:attribute name="type" type="xs:string" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Functions" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence maxOccurs="unbounded">
+                                <xs:element name="Function">
+                                  <xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" use="required" />
+                                    <xs:attribute name="returnType" type="xs:string" use="required" />
+                                    <xs:attribute name="params" type="xs:string" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Classes" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence maxOccurs="unbounded">
+                                <xs:element ref="Class" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:all>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:all>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
